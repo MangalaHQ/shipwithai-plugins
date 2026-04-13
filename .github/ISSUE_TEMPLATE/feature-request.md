@@ -14,7 +14,7 @@ labels: enhancement
 
 ## Proposed Solution
 
-<!-- How should it work? -->
+<!-- How should it work? Which skill/bundle would be affected? -->
 
 ## Alternatives Considered
 
