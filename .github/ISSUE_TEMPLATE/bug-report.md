@@ -6,7 +6,11 @@ labels: bug
 
 ## Plugin Name
 
-<!-- Which plugin is affected? e.g., planning-assistant -->
+<!-- Which plugin is affected? e.g., auth, blog-writer -->
+
+## Skill / Bundle
+
+<!-- Which skill or bundle? e.g., auth-setup, better-auth.md -->
 
 ## Describe the Bug
 
@@ -29,10 +33,9 @@ labels: bug
 ## Environment
 
 - OS:
-- Node version:
 - Claude Code version:
-- Plugin version:
+- Plugin version (from plugin.json):
 
 ## Additional Context
 
-<!-- Screenshots, logs, etc. -->
+<!-- Screenshots, logs, Claude Code output, etc. -->

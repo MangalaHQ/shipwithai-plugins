@@ -18,12 +18,17 @@ Closes #
 
 ## Testing
 
-- [ ] Unit tests added/updated
-- [ ] Tested locally
-- [ ] CI passing
+- [ ] Evals pass (if skill modified)
+- [ ] Test suite pass (if plugin has `tests/`)
+- [ ] Tested locally with `claude --plugin-dir`
+- [ ] SKILL.md < 200 lines
+- [ ] Bundle files < 500 lines
+- [ ] Code blocks have language tags
 
 ## Checklist
 
 - [ ] README updated (if user-facing change)
-- [ ] Changeset added (`npx changeset`)
+- [ ] CHANGELOG.md updated
+- [ ] Version bumped in `.claude-plugin/plugin.json` (if releasing)
+- [ ] `manifest.json` updated (if skills added/removed)
 - [ ] No breaking changes (or clearly documented)
