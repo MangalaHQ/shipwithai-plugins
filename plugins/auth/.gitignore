@@ -1,0 +1,30 @@
+# OMC state (session-specific, not part of plugin)
+.omc/
+
+# Temporary test files
+.test-tmp/
+
+# Plugin benchmark / testing playground
+.benchmark/
+
+# Generated test output
+tests/last-run.json
+
+# Environment files
+.env
+.env.local
+
+# Node
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+.idea
+
+# Claude Code — personal & transient
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/worktrees/
+.claude/logs/

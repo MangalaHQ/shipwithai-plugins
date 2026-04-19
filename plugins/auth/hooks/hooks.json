@@ -1,0 +1,12 @@
+{
+  "description": "Auth setup verification hooks",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "description": "After writing/editing auth files, remind Claude to run verify script",
+        "script": "hooks/post-write-check.sh"
+      }
+    ]
+  }
+}

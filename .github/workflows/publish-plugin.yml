@@ -1,0 +1,85 @@
+name: Publish Plugin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugins/**/.claude-plugin/plugin.json'
+
+jobs:
+  detect-version-bumps:
+    runs-on: ubuntu-latest
+    outputs:
+      plugins: ${{ steps.detect.outputs.plugins }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - id: detect
+        name: Detect version bumps in plugin.json
+        run: |
+          PLUGINS="[]"
+
+          for plugin_json in $(git diff HEAD~1 --name-only | grep '.claude-plugin/plugin.json'); do
+            PLUGIN_DIR=$(echo "$plugin_json" | sed 's|/.claude-plugin/plugin.json||')
+            PLUGIN_NAME=$(basename "$PLUGIN_DIR")
+
+            OLD_VERSION=$(git show HEAD~1:"${plugin_json}" 2>/dev/null | python3 -c "import json,sys; print(json.load(sys.stdin)['version'])" 2>/dev/null || echo "0.0.0")
+            NEW_VERSION=$(python3 -c "import json; print(json.load(open('${plugin_json}'))['version'])")
+
+            if [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
+              echo "Version bump detected: ${PLUGIN_NAME} ${OLD_VERSION} → ${NEW_VERSION}"
+              PLUGINS=$(echo "$PLUGINS" | python3 -c "import json,sys; l=json.load(sys.stdin); l.append('${PLUGIN_NAME}'); print(json.dumps(l))")
+            fi
+          done
+
+          echo "plugins=${PLUGINS}" >> "$GITHUB_OUTPUT"
+          echo "Plugins to publish: ${PLUGINS}"
+
+  publish:
+    needs: detect-version-bumps
+    if: needs.detect-version-bumps.outputs.plugins != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        plugin: ${{ fromJson(needs.detect-version-bumps.outputs.plugins) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract plugin
+        run: |
+          PLUGIN_DIR="plugins/${{ matrix.plugin }}"
+          TEMP_DIR="/tmp/publish-${{ matrix.plugin }}"
+          mkdir -p "$TEMP_DIR"
+
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.omc' \
+            --exclude='.claude/worktrees' \
+            --exclude='node_modules' \
+            --exclude='PLAN.md' \
+            "${PLUGIN_DIR}/" "${TEMP_DIR}/"
+
+          VERSION=$(python3 -c "import json; print(json.load(open('${PLUGIN_DIR}/.claude-plugin/plugin.json'))['version'])")
+          echo "Ready to publish: ${{ matrix.plugin }}@${VERSION}"
+          echo "PLUGIN_VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "PUBLISH_DIR=${TEMP_DIR}" >> "$GITHUB_ENV"
+
+      # TODO: Uncomment when marketplace CLI is available
+      # - name: Publish to marketplace
+      #   run: |
+      #     claude marketplace publish "${{ env.PUBLISH_DIR }}"
+      #   env:
+      #     CLAUDE_API_KEY: ${{ secrets.CLAUDE_MARKETPLACE_KEY }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "${{ matrix.plugin }}/v${{ env.PLUGIN_VERSION }}"
+          name: "${{ matrix.plugin }} v${{ env.PLUGIN_VERSION }}"
+          body: |
+            Plugin `${{ matrix.plugin }}` version `${{ env.PLUGIN_VERSION }}` published.
+
+            See `plugins/${{ matrix.plugin }}/CHANGELOG.md` for details.
+          generate_release_notes: true

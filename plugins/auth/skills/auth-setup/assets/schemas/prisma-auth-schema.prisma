@@ -1,0 +1,108 @@
+// ============================================================
+// Prisma Auth Schema
+// Works with: Better Auth, Auth.js (with Prisma adapter), Clerk (webhook sync)
+// Run: npx prisma db push (or npx prisma migrate dev)
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ──────────────────────────────────────
+// Users
+// ──────────────────────────────────────
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image         String?
+  role          String    @default("user")
+  banned        Boolean   @default(false)
+  banReason     String?   @map("ban_reason")
+  banExpires    DateTime? @map("ban_expires")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  sessions Sessions[]
+  accounts Account[]
+
+  @@map("users")
+}
+
+// ──────────────────────────────────────
+// Sessions
+// ──────────────────────────────────────
+model Sessions {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// ──────────────────────────────────────
+// Accounts (OAuth providers)
+// ──────────────────────────────────────
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String    @map("user_id")
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  // SECURITY: Consider encrypting tokens at rest in production.
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  idToken               String?   @map("id_token")
+  password              String?   // hashed, for email/password
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+// ──────────────────────────────────────
+// Verifications (email verify, password reset)
+// ──────────────────────────────────────
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String   // email or phone
+  value      String   // token or code
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("verifications")
+}
+
+// ──────────────────────────────────────
+// Optional: Two-factor auth
+// Uncomment if using 2FA
+// ──────────────────────────────────────
+// model TwoFactor {
+//   id          String   @id @default(cuid())
+//   userId      String   @unique @map("user_id")
+//   secret      String
+//   backupCodes String   @map("backup_codes") // JSON string
+//   createdAt   DateTime @default(now()) @map("created_at")
+//
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+//
+//   @@map("two_factors")
+// }

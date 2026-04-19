@@ -1,0 +1,151 @@
+name: Validate Plugin
+
+on:
+  pull_request:
+    paths:
+      - 'plugins/**'
+
+jobs:
+  detect-changed-plugins:
+    runs-on: ubuntu-latest
+    outputs:
+      plugins: ${{ steps.changes.outputs.plugins }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: changes
+        name: Detect changed plugins
+        run: |
+          # Get list of changed plugin directories
+          PLUGINS=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
+            | grep '^plugins/' \
+            | cut -d'/' -f2 \
+            | sort -u \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "plugins=${PLUGINS}" >> "$GITHUB_OUTPUT"
+          echo "Changed plugins: ${PLUGINS}"
+
+  validate:
+    needs: detect-changed-plugins
+    if: needs.detect-changed-plugins.outputs.plugins != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        plugin: ${{ fromJson(needs.detect-changed-plugins.outputs.plugins) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate required files
+        run: |
+          PLUGIN_DIR="plugins/${{ matrix.plugin }}"
+          echo "Validating: ${PLUGIN_DIR}"
+
+          REQUIRED=(
+            ".claude-plugin/plugin.json"
+            "manifest.json"
+            "CLAUDE.md"
+            "README.md"
+            "CHANGELOG.md"
+          )
+
+          FAILED=0
+          for f in "${REQUIRED[@]}"; do
+            if [ ! -f "${PLUGIN_DIR}/${f}" ]; then
+              echo "::error::Missing required file: ${PLUGIN_DIR}/${f}"
+              FAILED=1
+            else
+              echo "✓ ${f}"
+            fi
+          done
+
+          # Check for at least one SKILL.md
+          SKILL_COUNT=$(find "${PLUGIN_DIR}/skills" -name "SKILL.md" 2>/dev/null | wc -l)
+          if [ "$SKILL_COUNT" -eq 0 ]; then
+            echo "::error::No SKILL.md found in ${PLUGIN_DIR}/skills/"
+            FAILED=1
+          else
+            echo "✓ Found ${SKILL_COUNT} skill(s)"
+          fi
+
+          # Check for evals
+          EVAL_COUNT=$(find "${PLUGIN_DIR}/skills" -name "evals.json" 2>/dev/null | wc -l)
+          if [ "$EVAL_COUNT" -eq 0 ]; then
+            echo "::error::No evals.json found in ${PLUGIN_DIR}/skills/"
+            FAILED=1
+          else
+            echo "✓ Found ${EVAL_COUNT} eval file(s)"
+          fi
+
+          [ "$FAILED" -eq 0 ] || exit 1
+
+      - name: Check version consistency
+        run: |
+          PLUGIN_DIR="plugins/${{ matrix.plugin }}"
+
+          PLUGIN_V=$(python3 -c "import json; print(json.load(open('${PLUGIN_DIR}/.claude-plugin/plugin.json'))['version'])")
+          echo "plugin.json version: ${PLUGIN_V}"
+
+          if [ -f "${PLUGIN_DIR}/.claude-plugin/marketplace.json" ]; then
+            MKT_V=$(python3 -c "import json; print(json.load(open('${PLUGIN_DIR}/.claude-plugin/marketplace.json'))['version'])")
+            echo "marketplace.json version: ${MKT_V}"
+
+            if [ "$PLUGIN_V" != "$MKT_V" ]; then
+              echo "::error::Version mismatch: plugin.json=${PLUGIN_V} vs marketplace.json=${MKT_V}"
+              exit 1
+            fi
+          fi
+
+          echo "✓ Versions consistent"
+
+      - name: Check quality limits
+        run: |
+          PLUGIN_DIR="plugins/${{ matrix.plugin }}"
+          FAILED=0
+
+          # SKILL.md < 200 lines
+          for f in $(find "${PLUGIN_DIR}/skills" -name "SKILL.md"); do
+            LINES=$(wc -l < "$f")
+            if [ "$LINES" -gt 200 ]; then
+              echo "::warning::${f} exceeds 200 lines (${LINES})"
+              FAILED=1
+            else
+              echo "✓ ${f}: ${LINES} lines"
+            fi
+          done
+
+          # Bundles < 500 lines
+          for f in $(find "${PLUGIN_DIR}/skills" -path "*/bundles/*.md" 2>/dev/null); do
+            LINES=$(wc -l < "$f")
+            if [ "$LINES" -gt 500 ]; then
+              echo "::warning::${f} exceeds 500 lines (${LINES})"
+              FAILED=1
+            else
+              echo "✓ ${f}: ${LINES} lines"
+            fi
+          done
+
+          # References < 150 lines
+          for f in $(find "${PLUGIN_DIR}/skills" -path "*/references/*.md" 2>/dev/null); do
+            LINES=$(wc -l < "$f")
+            if [ "$LINES" -gt 150 ]; then
+              echo "::warning::${f} exceeds 150 lines (${LINES})"
+              FAILED=1
+            else
+              echo "✓ ${f}: ${LINES} lines"
+            fi
+          done
+
+          [ "$FAILED" -eq 0 ] || echo "::warning::Quality checks have warnings — review before merging"
+
+      - name: Run plugin tests (if available)
+        run: |
+          PLUGIN_DIR="plugins/${{ matrix.plugin }}"
+
+          if [ -f "${PLUGIN_DIR}/tests/run-all.js" ]; then
+            echo "Running test suite..."
+            cd "$PLUGIN_DIR"
+            npm install --ignore-scripts 2>/dev/null || true
+            node tests/run-all.js
+          else
+            echo "No test suite found — skipping"
+          fi

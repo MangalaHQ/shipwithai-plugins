@@ -1,0 +1,17 @@
+{
+  "name": "shipwithai-auth",
+  "description": "Set up production-ready auth in minutes. Supports Better Auth and Firebase Auth with OAuth social login, UI components, database schemas. Auto-detects existing themes. Run /shipwithai-auth:setup to start or /shipwithai-auth:doctor to diagnose issues.",
+  "version": "1.6.1",
+  "author": {
+    "name": "Ethan",
+    "url": "https://shipwithai.io"
+  },
+  "homepage": "https://shipwithai.io/plugins/auth",
+  "repository": "https://github.com/shipwithai/shipwithai-auth",
+  "license": "MIT",
+  "keywords": ["auth", "authentication", "login", "oauth", "google-oauth", "better-auth", "firebase", "nextjs"],
+  "skills": [
+    "./skills/auth-setup",
+    "./skills/auth-doctor"
+  ]
+}

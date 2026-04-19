@@ -1,0 +1,70 @@
+/*
+ * Theme: Sunrise
+ * Style: Warm light, friendly and approachable
+ * Font: Outfit (Google Fonts)
+ * Best for: Community, marketplace, consumer apps, blogs, education, e-commerce
+ *
+ * Usage: Replace the contents of globals.css with this file.
+ * Font import: Add to layout.tsx or globals.css:
+ *   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 30 50% 98%;
+    --foreground: 20 14.3% 10.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14.3% 10.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14.3% 10.2%;
+    --primary: 20.5 90.2% 48.2%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 30% 94%;
+    --secondary-foreground: 20 14.3% 10.2%;
+    --muted: 30 30% 94%;
+    --muted-foreground: 25 5.3% 44.7%;
+    --accent: 30 30% 94%;
+    --accent-foreground: 20 14.3% 10.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 24 5.7% 86.9%;
+    --input: 20 5.9% 82%;
+    --ring: 20.5 90.2% 48.2%;
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    --background: 20 14.3% 6%;
+    --foreground: 30 50% 96%;
+    --card: 20 14.3% 8%;
+    --card-foreground: 30 50% 96%;
+    --popover: 20 14.3% 8%;
+    --popover-foreground: 30 50% 96%;
+    --primary: 20.5 90.2% 48.2%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 20 14.3% 14%;
+    --secondary-foreground: 30 50% 96%;
+    --muted: 20 14.3% 14%;
+    --muted-foreground: 24 5.4% 58%;
+    --accent: 20 14.3% 14%;
+    --accent-foreground: 30 50% 96%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 30 50% 96%;
+    --border: 20 14.3% 16%;
+    --input: 20 14.3% 16%;
+    --ring: 20.5 90.2% 48.2%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
