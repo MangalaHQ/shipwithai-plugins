@@ -1,0 +1,111 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(*.pem)",
+      "Read(*.key)",
+      "Read(*credentials*)",
+      "Read(*secret*)",
+      "Write(.env)",
+      "Write(.env.*)",
+      "Write(*.pem)",
+      "Write(*.key)",
+      "Write(CLAUDE.md)",
+      "Write(.claude/settings.json)",
+      "Write(.claude/rules/**)",
+      "Write(.claude/hooks/**)",
+      "Write(.github/**)",
+      "Write(package-lock.json)",
+      "Write(pnpm-lock.yaml)",
+      "Write(yarn.lock)",
+      "Bash(rm -rf *)",
+      "Bash(rm -rf /)",
+      "Bash(git push --force*)",
+      "Bash(git push * --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(ssh *)",
+      "Bash(git commit*--no-verify*)",
+      "Bash(npx *)",
+      "Bash(chmod 777*)",
+      "Bash(npm publish*)",
+      "Bash(python*-c *)",
+      "Bash(node -e *)",
+      "Bash(bash -c *)",
+      "Bash(sh -c *)",
+      "Bash(eval *)"
+    ],
+    "allow": [
+      "Read(skills/**)",
+      "Read(commands/**)",
+      "Read(tests/**)",
+      "Read(docs/**)",
+      "Read(manifest.json)",
+      "Read(README.md)",
+      "Read(CHANGELOG.md)",
+      "Read(QUALITY-STANDARDS.md)",
+      "Read(CONTRIBUTING.md)",
+      "Read(.github/pull_request_template.md)",
+      "Write(skills/**)",
+      "Write(commands/**)",
+      "Write(tests/**)",
+      "Write(docs/decisions/DECISION-LOG.md)"
+    ],
+    "ask": [
+      "Bash(npm install*)",
+      "Bash(pnpm install*)",
+      "Bash(pnpm add*)",
+      "Bash(yarn add*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(git merge*)",
+      "Bash(git checkout*)",
+      "Write(manifest.json)",
+      "Write(CHANGELOG.md)",
+      "Write(docs/**)",
+      "Write(docs/decisions/ADR-*.md)",
+      "Write(QUALITY-STANDARDS.md)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/validate-command.py"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/npm-audit-check.sh",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-files.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-install-audit.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

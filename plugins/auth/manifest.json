@@ -1,0 +1,21 @@
+{
+  "lastUpdated": 1741046400000,
+  "skills": [
+    {
+      "skillId": "auth-setup",
+      "name": "auth-setup",
+      "description": "Set up authentication for web apps. Supports Better Auth and Firebase Auth. Handles email/password, Google OAuth, sessions, middleware, protected routes. Includes UI components. Auto-detects existing project themes. (GitHub & Apple OAuth coming soon)",
+      "creatorType": "community",
+      "updatedAt": "2026-04-16T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "auth-doctor",
+      "name": "auth-doctor",
+      "description": "Diagnose and fix issues in existing auth setups. Scans environment, files, security, middleware, OAuth, database, and dangerous code patterns. Produces scored health report with actionable fixes.",
+      "creatorType": "community",
+      "updatedAt": "2026-04-16T00:00:00Z",
+      "enabled": true
+    }
+  ]
+}
