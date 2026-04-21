@@ -1,7 +1,7 @@
 ---
 name: auth-setup
-description: "Set up authentication for web apps. Supports Better Auth and Firebase Auth. Handles email/password, Google OAuth, sessions, middleware, protected routes. Includes UI components. Auto-detects existing project themes. (GitHub & Apple OAuth coming soon)"
-version: 1.6.1
+description: "Set up auth for web apps. Better Auth & Firebase Auth. Email/password, Google OAuth, sessions, middleware, protected routes, UI components. Auto-detects themes."
+version: 1.8.0
 license: MIT
 ---
 
@@ -126,7 +126,7 @@ Before asking ANY questions, scan the project silently:
 - But if `globals.css` already has shadcn CSS variables → Scenario A (skip theme generation)
 
 **Show discovery summary to user:**
-```
+```text
 🔍 Project scan complete
 
 Framework:     Next.js 14.2.18 (App Router)
@@ -142,7 +142,7 @@ Ready to set up authentication.
 ```
 
 **If critical issues found, STOP and report:**
-```
+```text
 ⛔ Cannot proceed:
 - Next.js 13 detected — requires Next.js 14+ with App Router
 - No `app/` directory found — Pages Router not supported
@@ -411,55 +411,11 @@ Run `scripts/verify-auth-setup.ts` to confirm auth works end-to-end. The script 
 
 ### Step 8: Generate README
 
-Create a README.md for the generated project. Include:
-
-```markdown
-# [Project Name]
-
-## Authentication Setup
-
-This project uses [Provider Name] for authentication.
-
-### Prerequisites
-
-- Node.js 18+
-- [Provider-specific prerequisites]
-
-### Getting Started
-
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Copy `.env.example` to `.env.local`: `cp .env.example .env.local`
-4. Fill in the environment variables (see below)
-5. Run the development server: `npm run dev`
-6. Open [http://localhost:3000](http://localhost:3000)
-
-### Environment Variables
-
-| Variable | Description | Where to get it |
-|----------|-------------|-----------------|
-| [List all required env vars with descriptions and links to where to get them] |
-
-### For Firebase Auth:
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a project (or select existing)
-3. Go to Project Settings → General → Your apps → Add web app
-4. Copy the config values to `NEXT_PUBLIC_FIREBASE_*` vars
-5. Go to Project Settings → Service accounts → Generate new private key
-6. Copy `project_id`, `client_email`, `private_key` to `FIREBASE_*` vars
-7. Go to Authentication → Sign-in method → Enable Email/Password and Google
-
-### Auth Flow
-
-- `/login` — Sign in with email/password or Google
-- `/register` — Create a new account
-- `/forgot-password` — Reset password via email
-- `/dashboard` — Protected page (requires authentication)
-
-### Project Structure
-
-[List key files and their purpose]
-```
+Copy `assets/templates/README.template.md` to the user's project as `README.md`. Customize it:
+1. Replace `[Project Name]` with the detected project name (from `package.json`)
+2. Replace `[Provider Name]` with the chosen provider (Better Auth or Firebase Auth)
+3. Keep only the env vars relevant to the chosen provider (remove the other section's rows)
+4. Keep only the key files relevant to the chosen provider
 
 ## CRITICAL CODE RULES — Violating any of these causes runtime crashes
 
@@ -506,5 +462,5 @@ Full 60 pitfalls: `references/09-common-pitfalls.md`
 - [ ] Add security headers to `next.config.ts` (use `assets/config/next.config.ts` template)
 - [ ] Add protected layout for server-side session verification (Firebase)
 - [ ] Set `NEXT_PUBLIC_APP_URL` for CSRF protection (Firebase)
-- [ ] Enable rate limiting for production (see `05-firebase-auth-guide.md` Security Hardening section)
+- [ ] Enable rate limiting for production (see `05-firebase-auth-guide.md` → Rate Limiting section — use Upstash for serverless, in-memory for self-hosted)
 - [ ] Run verify-auth-setup script

@@ -51,7 +51,7 @@ Options:
 - Not sure — help me choose
 
 **If user selects a "Coming Soon" provider:** Do NOT proceed. Show:
-```
+```text
 ⚠️ {provider} support is coming soon! Currently supported providers:
   1. Better Auth — self-hosted, full control, zero cost
   2. Firebase Auth — Google ecosystem, mobile/KMP ready
@@ -74,7 +74,7 @@ Options:
 - None — Email/password only, add social login later
 
 **If user selects an option with "Coming Soon" providers:** Show:
-```
+```text
 ⚠️ {providers} support is coming soon! Currently only Google OAuth is supported.
 
 I'll set up Google login now. The other providers can be added later via /shipwithai-auth:add-oauth when available.

@@ -9,7 +9,7 @@
 
 ```yaml
 plugin_name: shipwithai-auth
-plugin_version: 1.7.0
+plugin_version: 1.8.0
 domain: Authentication
 target_user: Indie hackers
 framework: Next.js 14+ App Router
