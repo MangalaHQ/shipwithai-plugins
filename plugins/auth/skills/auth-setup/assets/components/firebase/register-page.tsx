@@ -21,6 +21,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loadingAction, setLoadingAction] = useState<"idle" | "email" | "google" | "github">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [isRegistered, setIsRegistered] = useState(false);
   const isLoading = loadingAction !== "idle";
 
   async function handleRegister(event: React.FormEvent) {
@@ -39,9 +40,15 @@ export default function RegisterPage() {
     try {
       const result = await createUserWithEmailAndPassword(getFirebaseAuth(), email, password);
       await updateProfile(result.user, { displayName: name });
-      await createSessionCookie(result.user);
-      void sendEmailVerification(result.user).catch(console.error);
-      router.push("/dashboard");
+      // If email verification is enabled (the default), show verification notice.
+      // Otherwise, create session and redirect to dashboard.
+      if (!result.user.emailVerified) {
+        void sendEmailVerification(result.user).catch(console.error);
+        setIsRegistered(true);
+      } else {
+        await createSessionCookie(result.user);
+        router.push("/dashboard");
+      }
     } catch (catchError) {
       console.error("Registration error:", catchError);
       setError("Unable to create account. Please try again.");
@@ -63,6 +70,27 @@ export default function RegisterPage() {
     } finally {
       setLoadingAction("idle");
     }
+  }
+
+  if (isRegistered) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Check your email</CardTitle>
+            <CardDescription>
+              We sent a verification link to <strong>{email}</strong>.
+              Click the link to activate your account, then sign in.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="justify-center">
+            <Link href="/login">
+              <Button variant="outline">Go to login</Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    );
   }
 
   return (

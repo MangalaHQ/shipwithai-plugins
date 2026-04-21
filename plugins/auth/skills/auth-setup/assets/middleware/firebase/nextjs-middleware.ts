@@ -13,6 +13,9 @@ import type { NextRequest } from "next/server";
 //   const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
 //   if (!decodedClaims) redirect("/login");
 // Without server-side verification, users can bypass auth by setting a fake __session cookie.
+//
+// SEE ALSO: 05-firebase-auth-guide.md → "Server-Side Verification" section
+// for the getServerUser() pattern that MUST be used in protected layouts and API routes.
 // ============================================================
 
 // PUBLIC routes — everything else requires authentication

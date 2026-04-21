@@ -4,6 +4,32 @@ All notable changes to the shipwithai-auth plugin will be documented in this fil
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.8.0] - 2026-04-20
+
+### Security Fixes
+- **[#15] email.ts:** Dev fallback no longer logs full email HTML with tokens. Now extracts and logs only the action URL with a security warning. ([#15](https://github.com/MangalaHQ/shipwithai-plugins/issues/15))
+- **[#6] Firebase forgot-password:** Removed `console.error` that logged raw Firebase error codes (enabled user enumeration). ([#6](https://github.com/MangalaHQ/shipwithai-plugins/issues/6))
+- **[#7] Firebase token refresh:** Listener now signs out and redirects on 401/403 session rejection instead of silently failing. ([#7](https://github.com/MangalaHQ/shipwithai-plugins/issues/7))
+- **[#5] Firebase middleware:** Added `SEE ALSO` reference to server-side verification guide. Added security checklist callout in `05-firebase-auth-guide.md`. ([#5](https://github.com/MangalaHQ/shipwithai-plugins/issues/5))
+- **[#9] Rate limiting:** Added memory leak protection (Map size guard) to in-memory rate limiter. Expanded SKILL.md checklist with Upstash guidance. ([#9](https://github.com/MangalaHQ/shipwithai-plugins/issues/9))
+
+### Bug Fixes
+- **[#13] Better Auth login:** Now detects `EMAIL_NOT_VERIFIED` error code and shows specific "verify your email" message instead of generic error. ([#13](https://github.com/MangalaHQ/shipwithai-plugins/issues/13))
+- **[#12] Register pages (Better Auth + Firebase):** Show "Check your email" verification notice after signup instead of redirecting to `/dashboard` (which caused a confusing redirect loop with `requireEmailVerification: true`). ([#12](https://github.com/MangalaHQ/shipwithai-plugins/issues/12))
+- **[#11] Better Auth OAuth:** Added 10-second timeout safety reset for OAuth redirect flows. If credentials are misconfigured and redirect doesn't happen, UI resets with a helpful error message. ([#11](https://github.com/MangalaHQ/shipwithai-plugins/issues/11))
+
+### Documentation
+- **[#10] Better Auth guide:** Added API endpoint mapping table for Postman/curl testing. Documents the `requestPasswordReset()` → `forget-password` naming mismatch. ([#10](https://github.com/MangalaHQ/shipwithai-plugins/issues/10))
+- **[#14] README template:** Extracted Step 8 README to `assets/templates/README.template.md` with provider-aware env vars, auth routes, key files, and production checklist. SKILL.md reduced by ~45 lines. ([#14](https://github.com/MangalaHQ/shipwithai-plugins/issues/14))
+
+### Closed (Already Fixed in v1.6.1+)
+- **[#3] Firebase CSRF:** Session POST handler already includes Origin validation + rate limiting in current template. ([#3](https://github.com/MangalaHQ/shipwithai-plugins/issues/3))
+- **[#4] Firebase token revocation:** Session DELETE handler already includes `verifySessionCookie()` + `revokeRefreshTokens()` in current template. ([#4](https://github.com/MangalaHQ/shipwithai-plugins/issues/4))
+- **[#8] Security headers:** `next.config.ts` template with X-Frame-Options, HSTS, CSP, COOP already exists in `assets/config/`. ([#8](https://github.com/MangalaHQ/shipwithai-plugins/issues/8))
+
+### Migration Note
+Projects generated from plugin versions < 1.6.1 may be missing CSRF protection (#3), token revocation (#4), and security headers (#8). Re-run `/shipwithai-auth:doctor` to detect and fix these issues.
+
 ## [1.7.0] - 2026-04-18
 
 ### Added

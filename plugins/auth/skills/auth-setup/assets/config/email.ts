@@ -45,8 +45,12 @@ export async function sendAuthEmail({
     if (process.env.NODE_ENV === "production") {
       throw new Error("RESEND_API_KEY is required in production.");
     }
+    // Extract action URL for dev convenience — avoid dumping full HTML to terminal
+    // SECURITY: The URL contains auth tokens. Never log in production or staging.
+    const urlMatch = html.match(/href="([^"]+)"/);
+    const devUrl = urlMatch?.[1] ?? "(no URL found in email)";
     console.log(`[AUTH-DEV] Email to ${to}: ${subject}`);
-    console.log(`[AUTH-DEV] HTML: ${html}`);
+    console.log(`[AUTH-DEV] Action URL (dev only): ${devUrl}`);
     return;
   }
 

@@ -253,6 +253,17 @@ await authClient.resetPassword({ newPassword: password, token });
 
 **SECURITY:** Always hardcode `redirectTo: "/reset-password"`. Never derive it from URL params or user input — this prevents open redirect attacks (see pitfall #33).
 
+### API Endpoint Mapping (for Postman/curl testing)
+
+| Client Method | Server Endpoint |
+|---|---|
+| `authClient.signIn.email()` | `POST /api/auth/sign-in/email` |
+| `authClient.signUp.email()` | `POST /api/auth/sign-up/email` |
+| `authClient.requestPasswordReset()` | `POST /api/auth/forget-password` |
+| `authClient.resetPassword()` | `POST /api/auth/reset-password` |
+
+> **Gotcha:** Client method is `requestPasswordReset()` but endpoint is `forget-password`. Testing with `/request-password-reset` returns 404.
+
 ## OAuth Setup (Google & GitHub)
 
 **Google OAuth:**

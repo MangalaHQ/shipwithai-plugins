@@ -19,6 +19,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loadingAction, setLoadingAction] = useState<"idle" | "email" | "google" | "github">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [isRegistered, setIsRegistered] = useState(false);
   const isLoading = loadingAction !== "idle";
 
   async function handleRegister(event: React.FormEvent) {
@@ -46,7 +47,9 @@ export default function RegisterPage() {
     try {
       const { error } = await authClient.signUp.email({ email, password, name });
       if (error) throw new Error(error.message);
-      router.push("/dashboard");
+      // Show verification notice instead of redirecting to dashboard.
+      // With requireEmailVerification: true, the session is not valid until verified.
+      setIsRegistered(true);
     } catch (catchError) {
       console.error("Registration error:", catchError);
       setError("Unable to create account. Please try again.");
@@ -58,13 +61,41 @@ export default function RegisterPage() {
   async function handleOAuthLogin(provider: "google" | "github") {
     setLoadingAction(provider);
     setError(null);
+    // Safety timeout: if OAuth redirect doesn't happen within 10s, reset UI.
+    const timeout = setTimeout(() => {
+      setLoadingAction("idle");
+      setError(`OAuth sign-up didn't redirect. Check that your ${provider} credentials are configured in .env.local.`);
+    }, 10_000);
     try {
       await authClient.signIn.social({ provider, callbackURL: "/dashboard" });
-      // Better Auth handles redirect
+      clearTimeout(timeout);
+      // Better Auth handles redirect — if we reach here without redirect, timeout will reset UI
     } catch {
+      clearTimeout(timeout);
       setError(`Failed to sign up with ${provider}.`);
       setLoadingAction("idle");
     }
+  }
+
+  if (isRegistered) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Check your email</CardTitle>
+            <CardDescription>
+              We sent a verification link to <strong>{email}</strong>.
+              Click the link to activate your account, then sign in.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="justify-center">
+            <Link href="/login">
+              <Button variant="outline">Go to login</Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    );
   }
 
   return (
