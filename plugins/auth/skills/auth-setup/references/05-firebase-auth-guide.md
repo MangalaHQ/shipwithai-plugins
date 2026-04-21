@@ -309,6 +309,9 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000  # Change to your production URL in pr
 ```
 
 ### Server-Side Session Verification
+
+> **Security Checklist:** Middleware does NOT protect against: forged cookies, expired sessions, or revoked tokens. You MUST call `getServerUser()` in every protected layout and API route.
+
 The middleware can only check cookie **existence** (Edge Runtime limitation). You **must** verify the session cryptographically in every protected Server Component or API route:
 ```ts
 // app/(protected)/layout.tsx — wraps all protected routes
@@ -352,6 +355,12 @@ const attempts = new Map<string, { count: number; resetAt: number }>();
 
 export function checkRateLimit(key: string, maxAttempts = 5, windowMs = 60_000): boolean {
   const now = Date.now();
+  // Prevent memory leak: evict expired entries when map grows too large
+  if (attempts.size > 10_000) {
+    for (const [k, v] of attempts) {
+      if (now > v.resetAt) attempts.delete(k);
+    }
+  }
   const entry = attempts.get(key);
   if (!entry || now > entry.resetAt) {
     attempts.set(key, { count: 1, resetAt: now + windowMs });

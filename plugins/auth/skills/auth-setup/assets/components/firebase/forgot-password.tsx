@@ -23,8 +23,8 @@ export default function ForgotPasswordPage() {
     try {
       await sendPasswordResetEmail(getFirebaseAuth(), email);
       setIsSubmitted(true);
-    } catch (submitError) {
-      console.error("Password reset error:", submitError);
+    } catch {
+      // Always show success to prevent email enumeration
       setIsSubmitted(true);
     } finally {
       setIsLoading(false);

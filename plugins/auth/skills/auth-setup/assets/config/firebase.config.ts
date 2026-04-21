@@ -265,6 +265,13 @@ export function getFirebaseAuth(): Auth {
 //       });
 //       if (!response.ok) {
 //         console.error("Session refresh failed:", response.status);
+//         // If session is rejected, sign out to force re-authentication.
+//         // signOut() triggers onIdTokenChanged with user=null, skipping the if(user) block.
+//         if (response.status === 401 || response.status === 403) {
+//           await firebaseAuth.signOut();
+//           window.location.href = "/login";
+//           return;
+//         }
 //       }
 //     }
 //     setUser(user);
