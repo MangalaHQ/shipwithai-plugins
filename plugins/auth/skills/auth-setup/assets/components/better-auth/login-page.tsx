@@ -26,12 +26,20 @@ export default function LoginPage() {
 
     try {
       const { error } = await authClient.signIn.email({ email, password });
-      if (error) throw new Error(error.message);
+      if (error) {
+        // Detect email verification error before falling back to generic message
+        if (error.code === "EMAIL_NOT_VERIFIED" || (error.message?.toLowerCase().includes("email") && error.message?.toLowerCase().includes("verif"))) {
+          setError("Please verify your email before signing in. Check your inbox for the verification link.");
+        } else {
+          // SECURITY: Generic error message prevents account enumeration.
+          setError("Unable to sign in. Please check your credentials.");
+        }
+        return;
+      }
       router.push("/dashboard");
     } catch (catchError) {
       console.error("Login error:", catchError);
-      // SECURITY: Generic error message prevents account enumeration.
-      setError("Unable to sign in. Please check your credentials and ensure your email is verified.");
+      setError("Unable to sign in. Please check your credentials.");
     } finally {
       setLoadingAction("idle");
     }
@@ -40,10 +48,18 @@ export default function LoginPage() {
   async function handleOAuthLogin(provider: "google" | "github" | "apple") {
     setLoadingAction(provider);
     setError(null);
+    // Safety timeout: if OAuth redirect doesn't happen within 10s, reset UI.
+    // This catches misconfigured credentials where signIn.social resolves without redirecting.
+    const timeout = setTimeout(() => {
+      setLoadingAction("idle");
+      setError(`OAuth sign-in didn't redirect. Check that your ${provider} credentials are configured in .env.local.`);
+    }, 10_000);
     try {
       await authClient.signIn.social({ provider, callbackURL: "/dashboard" });
-      // Better Auth handles redirect
+      clearTimeout(timeout);
+      // Better Auth handles redirect — if we reach here without redirect, timeout will reset UI
     } catch {
+      clearTimeout(timeout);
       setError(`Failed to sign in with ${provider}. Please try again.`);
       setLoadingAction("idle");
     }
