@@ -25,4 +25,5 @@ coverage/
 
 # Claude Code worktrees & session state
 .claude/worktrees/
+.claude/settings.local.json
 .omc/
