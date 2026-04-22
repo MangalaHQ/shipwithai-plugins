@@ -41,6 +41,8 @@ jobs:
     needs: detect-version-bumps
     if: needs.detect-version-bumps.outputs.plugins != '[]'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # required by softprops/action-gh-release to create tags + releases and generate release notes
     strategy:
       matrix:
         plugin: ${{ fromJson(needs.detect-version-bumps.outputs.plugins) }}
