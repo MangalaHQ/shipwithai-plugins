@@ -8,13 +8,30 @@
 
 ## Quick Start
 
+### Install via Claude Code (no cloning required)
+
+Open Claude Code in any directory and run:
+
 ```bash
-# Clone repo
+# Register the ShipWithAI marketplace (one-time setup)
+/plugin marketplace add ShipWithAI/shipwithai-plugins
+
+# Install any plugin by name
+/plugin install shipwithai-auth@shipwithai
+```
+
+### Local development (see [CONTRIBUTING.md](./CONTRIBUTING.md))
+
+```bash
 git clone git@github.com:ShipWithAI/shipwithai-plugins.git
 cd shipwithai-plugins
 
-# Load a specific plugin locally in Claude Code
+# Load a plugin for a single session
 claude --plugin-dir ./plugins/auth
+
+# Or register the local repo as a marketplace
+/plugin marketplace add /absolute/path/to/shipwithai-plugins
+/plugin install shipwithai-auth@shipwithai
 ```
 
 ---
@@ -25,7 +42,7 @@ claude --plugin-dir ./plugins/auth
 
 | Plugin | SDLC Phase | Status |
 |---|---|---|
-| `auth` | Authentication | 🟢 Active (v1.4.0) |
+| `auth` | Authentication | 🟢 Active (v1.7.0) |
 | `planning-assistant` | Planning | 🔴 Not started |
 | `code-scaffolder` | Coding | 🔴 Not started |
 | `code-reviewer-lite` | Coding | 🔴 Not started |

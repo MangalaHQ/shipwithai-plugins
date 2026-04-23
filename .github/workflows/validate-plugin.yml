@@ -97,6 +97,29 @@ jobs:
 
           echo "✓ Versions consistent"
 
+      - name: Check root marketplace.json sync
+        run: |
+          PLUGIN_DIR="plugins/${{ matrix.plugin }}"
+
+          PLUGIN_NAME=$(python3 -c "import json; print(json.load(open('${PLUGIN_DIR}/.claude-plugin/plugin.json'))['name'])" 2>/dev/null) || { echo "::error::Cannot read plugin name from plugin.json"; exit 1; }
+          PLUGIN_V=$(python3 -c "import json; print(json.load(open('${PLUGIN_DIR}/.claude-plugin/plugin.json'))['version'])" 2>/dev/null) || { echo "::error::Cannot read plugin version from plugin.json"; exit 1; }
+
+          if [ ! -f ".claude-plugin/marketplace.json" ]; then
+            echo "::warning::.claude-plugin/marketplace.json not found at repo root — skipping sync check"
+            exit 0
+          fi
+
+          ROOT_V=$(python3 -c "import json,sys; data=json.load(open('.claude-plugin/marketplace.json')); name=sys.argv[1]; match=[p for p in data.get('plugins',[]) if p.get('name')==name]; print('NOT_FOUND' if not match else str(match[0].get('version','UNKNOWN')))" "$PLUGIN_NAME" 2>/dev/null) || { echo "::error::Failed to parse root marketplace.json"; exit 1; }
+
+          if [ "$ROOT_V" = "NOT_FOUND" ]; then
+            echo "::warning::${PLUGIN_NAME} not listed in root marketplace.json — add it before publishing"
+          elif [ "$ROOT_V" != "$PLUGIN_V" ]; then
+            echo "::error::Root marketplace.json version mismatch for ${PLUGIN_NAME}: marketplace.json=${ROOT_V} vs plugin.json=${PLUGIN_V}"
+            exit 1
+          else
+            echo "✓ Root marketplace.json in sync: ${PLUGIN_NAME}@${ROOT_V}"
+          fi
+
       - name: Check quality limits
         run: |
           PLUGIN_DIR="plugins/${{ matrix.plugin }}"
