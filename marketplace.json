@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "shipwithai",
-  "description": "ShipWithAI SDLC Toolkit — Claude Code plugins covering the full software development lifecycle.",
+  "description": "ShipWithAI SDLC Toolkit \u2014 Claude Code plugins covering the full software development lifecycle.",
   "owner": {
     "name": "ShipWithAI",
     "email": "support@shipwithai.com"
