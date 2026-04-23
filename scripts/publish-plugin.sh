@@ -118,38 +118,49 @@ fi
 ROOT_MARKETPLACE="${REPO_ROOT}/marketplace.json"
 
 if [ -f "$ROOT_MARKETPLACE" ]; then
-  PLUGIN_NAME_VAL=$(python3 -c "import json; print(json.load(open('${PLUGIN_DIR}/.claude-plugin/plugin.json'))['name'])" 2>/dev/null) || die "Cannot read plugin name from plugin.json"
+  PLUGIN_NAME_VAL=$(python3 -c "
+import json, sys
+try:
+    with open(sys.argv[1]) as f:
+        print(json.load(f)['name'])
+except Exception as e:
+    print(f'ERROR: {e}', file=sys.stderr)
+    sys.exit(1)
+" "${PLUGIN_DIR}/.claude-plugin/plugin.json") || die "Cannot read plugin name from plugin.json"
 
   CURRENT_ROOT_V=$(python3 -c "
 import json, sys
 try:
-    with open('${ROOT_MARKETPLACE}') as f:
+    with open(sys.argv[1]) as f:
         data = json.load(f)
-    name = sys.argv[1]
+    name = sys.argv[2]
     match = [p for p in data.get('plugins', []) if p.get('name') == name]
     print('NOT_FOUND' if not match else str(match[0].get('version', 'UNKNOWN')))
 except Exception as e:
-    print('ERROR', file=sys.stderr)
+    print(f'ERROR: {e}', file=sys.stderr)
     sys.exit(1)
-" "$PLUGIN_NAME_VAL") || die "Cannot parse root marketplace.json"
+" "$ROOT_MARKETPLACE" "$PLUGIN_NAME_VAL") || die "Cannot parse root marketplace.json"
 
   if [ "$CURRENT_ROOT_V" = "NOT_FOUND" ]; then
     warn "Plugin '${PLUGIN_NAME_VAL}' not found in root marketplace.json — add it manually"
   elif [ "$CURRENT_ROOT_V" != "$PLUGIN_VERSION" ]; then
     python3 -c "
 import json, sys
-with open('${ROOT_MARKETPLACE}') as f:
-    data = json.load(f)
-name = sys.argv[1]
-version = sys.argv[2]
-for p in data.get('plugins', []):
-    if p.get('name') == name:
-        p['version'] = version
-        break
-with open('${ROOT_MARKETPLACE}', 'w') as f:
-    json.dump(data, f, indent=2)
-    f.write('\n')
-" "$PLUGIN_NAME_VAL" "$PLUGIN_VERSION" || die "Failed to update root marketplace.json"
+try:
+    with open(sys.argv[1]) as f:
+        data = json.load(f)
+    name, version = sys.argv[2], sys.argv[3]
+    for p in data.get('plugins', []):
+        if p.get('name') == name:
+            p['version'] = version
+            break
+    with open(sys.argv[1], 'w') as f:
+        json.dump(data, f, indent=2)
+        f.write('\n')
+except Exception as e:
+    print(f'ERROR: {e}', file=sys.stderr)
+    sys.exit(1)
+" "$ROOT_MARKETPLACE" "$PLUGIN_NAME_VAL" "$PLUGIN_VERSION" || die "Failed to update root marketplace.json"
     log "Updated root marketplace.json: ${PLUGIN_NAME_VAL} → ${PLUGIN_VERSION}"
   else
     log "Root marketplace.json already in sync: ${PLUGIN_NAME_VAL}@${PLUGIN_VERSION}"
