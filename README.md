@@ -20,7 +20,7 @@ Open Claude Code in any directory and run:
 /plugin install shipwithai-auth@shipwithai
 ```
 
-### Local development (contributors)
+### Local development (see [CONTRIBUTING.md](./CONTRIBUTING.md))
 
 ```bash
 git clone git@github.com:ShipWithAI/shipwithai-plugins.git
