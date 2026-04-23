@@ -131,7 +131,7 @@ try:
 except Exception as e:
     print('ERROR', file=sys.stderr)
     sys.exit(1)
-" -- "$PLUGIN_NAME_VAL") || die "Cannot parse root marketplace.json"
+" "$PLUGIN_NAME_VAL") || die "Cannot parse root marketplace.json"
 
   if [ "$CURRENT_ROOT_V" = "NOT_FOUND" ]; then
     warn "Plugin '${PLUGIN_NAME_VAL}' not found in root marketplace.json — add it manually"
@@ -149,7 +149,7 @@ for p in data.get('plugins', []):
 with open('${ROOT_MARKETPLACE}', 'w') as f:
     json.dump(data, f, indent=2)
     f.write('\n')
-" -- "$PLUGIN_NAME_VAL" "$PLUGIN_VERSION" || die "Failed to update root marketplace.json"
+" "$PLUGIN_NAME_VAL" "$PLUGIN_VERSION" || die "Failed to update root marketplace.json"
     log "Updated root marketplace.json: ${PLUGIN_NAME_VAL} → ${PLUGIN_VERSION}"
   else
     log "Root marketplace.json already in sync: ${PLUGIN_NAME_VAL}@${PLUGIN_VERSION}"
