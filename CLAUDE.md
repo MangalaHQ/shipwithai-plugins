@@ -90,7 +90,7 @@ Skill description: < 200 characters, must include trigger phrases.
 ## Versioning & Publishing
 
 - Version is the source of truth in `.claude-plugin/plugin.json`.
-- If `marketplace.json` exists, its version must match `plugin.json` — CI blocks mismatches.
+- If `.claude-plugin/marketplace.json` exists, its version must match `plugin.json` — CI blocks mismatches.
 - A version bump in `plugin.json` on `main` triggers automatic GitHub Release creation.
 - Commands: `shipwithai-<plugin>:<command>` (e.g., `shipwithai-auth:setup`).
 

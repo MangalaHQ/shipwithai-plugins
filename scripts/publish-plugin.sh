@@ -116,7 +116,7 @@ fi
 # ------------------------------------------------------------------
 # 5a. Sync version in root marketplace.json
 # ------------------------------------------------------------------
-ROOT_MARKETPLACE="${REPO_ROOT}/marketplace.json"
+ROOT_MARKETPLACE="${REPO_ROOT}/.claude-plugin/marketplace.json"
 
 if [ -f "$ROOT_MARKETPLACE" ]; then
   PLUGIN_NAME_VAL=$(python3 -c "
