@@ -19,6 +19,7 @@ DRY_RUN="${2:-}"
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PLUGIN_DIR="${REPO_ROOT}/plugins/${PLUGIN_NAME}"
 TEMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TEMP_DIR"' EXIT
 
 # Colors
 RED='\033[0;31m'
@@ -144,7 +145,10 @@ except Exception as e:
   if [ "$CURRENT_ROOT_V" = "NOT_FOUND" ]; then
     warn "Plugin '${PLUGIN_NAME_VAL}' not found in root marketplace.json — add it manually"
   elif [ "$CURRENT_ROOT_V" != "$PLUGIN_VERSION" ]; then
-    python3 -c "
+    if [ "$DRY_RUN" = "--dry-run" ]; then
+      log "DRY RUN — would update root marketplace.json: ${PLUGIN_NAME_VAL} ${CURRENT_ROOT_V} → ${PLUGIN_VERSION}"
+    else
+      python3 -c "
 import json, sys
 try:
     with open(sys.argv[1]) as f:
@@ -161,7 +165,8 @@ except Exception as e:
     print(f'ERROR: {e}', file=sys.stderr)
     sys.exit(1)
 " "$ROOT_MARKETPLACE" "$PLUGIN_NAME_VAL" "$PLUGIN_VERSION" || die "Failed to update root marketplace.json"
-    log "Updated root marketplace.json: ${PLUGIN_NAME_VAL} → ${PLUGIN_VERSION}"
+      log "Updated root marketplace.json: ${PLUGIN_NAME_VAL} → ${PLUGIN_VERSION}"
+    fi
   else
     log "Root marketplace.json already in sync: ${PLUGIN_NAME_VAL}@${PLUGIN_VERSION}"
   fi

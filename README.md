@@ -42,7 +42,7 @@ claude --plugin-dir ./plugins/auth
 
 | Plugin | SDLC Phase | Status |
 |---|---|---|
-| `auth` | Authentication | 🟢 Active (v1.4.0) |
+| `auth` | Authentication | 🟢 Active (v1.7.0) |
 | `planning-assistant` | Planning | 🔴 Not started |
 | `code-scaffolder` | Coding | 🔴 Not started |
 | `code-reviewer-lite` | Coding | 🔴 Not started |
