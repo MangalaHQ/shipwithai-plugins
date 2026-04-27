@@ -458,6 +458,83 @@ console.log("╚═════════════════════�
 
 if (targetProvider !== "all") console.log("  Provider: " + targetProvider);
 
+// ════════════════════════════════════════
+// 9. README Templates (Step 8 generation)
+// ════════════════════════════════════════
+function testReadmeTemplates() {
+  setSection("9. README Templates");
+
+  var templates = {
+    "firebase": "skills/auth-setup/assets/templates/providers/firebase/README.md.tmpl",
+    "better-auth": "skills/auth-setup/assets/templates/providers/better-auth/README.md.tmpl",
+  };
+
+  var providerSignals = {
+    "firebase": ["console.firebase.google.com", "FIREBASE_PROJECT_ID", "FIREBASE_PRIVATE_KEY", "NEXT_PUBLIC_FIREBASE_API_KEY"],
+    "better-auth": ["BETTER_AUTH_SECRET", "BETTER_AUTH_URL", "openssl rand -hex 32", "drizzle-kit"],
+  };
+
+  // Wrong-provider tokens should NOT appear (cross-contamination check)
+  var antiSignals = {
+    "firebase": ["BETTER_AUTH_SECRET"],
+    "better-auth": ["FIREBASE_PRIVATE_KEY", "NEXT_PUBLIC_FIREBASE_API_KEY"],
+  };
+
+  Object.keys(templates).forEach(function (provider) {
+    var tmplPath = templates[provider];
+    if (!fileExists(tmplPath)) {
+      fail(provider + ": template missing");
+      return;
+    }
+    pass(provider + ": template exists");
+
+    var content = readFile(tmplPath);
+
+    // Must contain at least one placeholder
+    if (/\{\{[A-Z_]+\}\}/.test(content)) pass(provider + ": uses {{PLACEHOLDER}} substitution");
+    else fail(provider + ": no {{PLACEHOLDER}} found");
+
+    // Must use double-brace, not single-brace (Issue 6A)
+    var singleBraceUpper = content.match(/(?<!\{)\{[A-Z_]+\}(?!\})/g);
+    if (!singleBraceUpper) pass(provider + ": no stray {SINGLE_BRACE} placeholders");
+    else fail(provider + ": uses {SINGLE_BRACE} — should be {{DOUBLE_BRACE}}", singleBraceUpper.join(", "));
+
+    // Provider signals present
+    var signals = providerSignals[provider];
+    var missingSignals = signals.filter(function (s) { return !content.includes(s); });
+    if (missingSignals.length === 0) pass(provider + ": all " + signals.length + " provider signals present");
+    else fail(provider + ": missing signals", missingSignals.join(", "));
+
+    // Wrong-provider tokens absent
+    var bleed = (antiSignals[provider] || []).filter(function (s) { return content.includes(s); });
+    if (bleed.length === 0) pass(provider + ": no cross-provider token bleed");
+    else fail(provider + ": leaks tokens from other provider", bleed.join(", "));
+
+    // Conditional markers must be balanced
+    var openIfs = (content.match(/<!--\s*IF\s+/g) || []).length;
+    var closeIfs = (content.match(/<!--\s*\/IF\s*-->/g) || []).length;
+    if (openIfs === closeIfs) pass(provider + ": " + openIfs + " conditional blocks balanced");
+    else fail(provider + ": unbalanced <!-- IF -->", openIfs + " open vs " + closeIfs + " close");
+
+    // Deep links to references must point to files that exist (Issue 3A)
+    var refLinkPattern = /references\/(\d{2}-[a-z-]+\.md)/g;
+    var match;
+    var deadLinks = [];
+    while ((match = refLinkPattern.exec(content)) !== null) {
+      var refFile = match[1];
+      if (!fileExists("skills/auth-setup/references/" + refFile)) deadLinks.push(refFile);
+    }
+    if (deadLinks.length === 0) pass(provider + ": all reference deep-links resolve");
+    else fail(provider + ": dead reference links", [...new Set(deadLinks)].join(", "));
+
+    // Required sections
+    var requiredSections = ["Prerequisites", "Quick Start", "Provider Configuration", "Environment Variables", "Auth Flow", "Project Structure", "Common Issues", "Production Checklist"];
+    var missingSections = requiredSections.filter(function (s) { return !content.includes("## " + s) && !content.includes("# " + s); });
+    if (missingSections.length === 0) pass(provider + ": all 8 required sections");
+    else fail(provider + ": missing sections", missingSections.join(", "));
+  });
+}
+
 testStructure();
 testSyntax();
 testDocs();
@@ -466,6 +543,7 @@ testProviders();
 testSchemas();
 testComponents();
 testCrossRefs();
+testReadmeTemplates();
 
 // ── Summary ───────────────────────────
 var passed = results.filter(function (r) { return r.status === "pass"; }).length;

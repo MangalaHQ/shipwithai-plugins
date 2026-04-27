@@ -333,6 +333,80 @@ function checkDangerousPatterns(provider: string) {
   }
 }
 
+// ── README quality checks ────────────
+function checkReadme(provider: string) {
+  console.log("\n📄 README:");
+
+  const readmePaths = ["README.md", "README.AUTH.md"];
+  const readmePath = readmePaths.find(fileExists);
+
+  if (!readmePath) {
+    fail("No README.md or README.AUTH.md found — Step 8 was skipped");
+    return;
+  }
+  pass(`${readmePath} exists`);
+
+  const readmeContent = fs.readFileSync(path.join(projectRoot, readmePath), "utf-8");
+
+  // Check 1: No unresolved placeholders
+  const placeholderMatches = readmeContent.match(/\{\{[A-Z_]+\}\}/g);
+  if (placeholderMatches) {
+    fail(`Unresolved placeholders in ${readmePath}: ${[...new Set(placeholderMatches)].join(", ")}`);
+  } else {
+    pass("No unresolved {{PLACEHOLDERS}}");
+  }
+
+  // Check 2: No orphan conditional markers
+  if (/<!--\s*\/?IF\s/i.test(readmeContent)) {
+    fail(`Orphan <!-- IF --> markers in ${readmePath} — conditional block processing incomplete`);
+  } else {
+    pass("No orphan <!-- IF --> markers");
+  }
+
+  // Check 3: At least one link to provider's console
+  const providerConsoleHosts: Record<string, string[]> = {
+    "better-auth": ["better-auth.com", "console.cloud.google.com", "resend.com"],
+    firebase: ["console.firebase.google.com", "console.cloud.google.com"],
+    clerk: ["clerk.com"],
+    authjs: ["console.cloud.google.com"],
+    supabase: ["supabase.com"],
+  };
+  const hosts = providerConsoleHosts[provider] || [];
+  const hasConsoleLink = hosts.some((host) => readmeContent.includes(host));
+  if (hasConsoleLink) {
+    pass("README links to at least one provider console");
+  } else {
+    fail(`README missing link to provider console (expected one of: ${hosts.join(", ")})`);
+  }
+
+  // Check 4: Cross-check env vars in .env.example ↔ README env table (Issue 4A)
+  const envExamplePath = path.join(projectRoot, ".env.example");
+  if (fs.existsSync(envExamplePath)) {
+    const envContent = fs.readFileSync(envExamplePath, "utf-8");
+    const envVarsInExample = [...envContent.matchAll(/^([A-Z][A-Z0-9_]+)=/gm)].map((m) => m[1]);
+    const undocumented = envVarsInExample.filter((v) => !readmeContent.includes(v));
+    if (undocumented.length === 0) {
+      pass(`All ${envVarsInExample.length} env vars from .env.example are documented in README`);
+    } else {
+      fail(`README missing env vars from .env.example: ${undocumented.join(", ")}`);
+    }
+  } else {
+    warn(".env.example not found — cannot cross-check README env table");
+  }
+
+  // Check 5: Provider mismatch detection — README shouldn't reference other providers' env vars
+  const otherProviderTokens: Record<string, string[]> = {
+    "better-auth": ["NEXT_PUBLIC_FIREBASE_API_KEY", "FIREBASE_PRIVATE_KEY"],
+    firebase: ["BETTER_AUTH_SECRET", "BETTER_AUTH_URL"],
+  };
+  const wrongTokens = (otherProviderTokens[provider] || []).filter((t) => readmeContent.includes(t));
+  if (wrongTokens.length > 0) {
+    fail(`README references env vars from a different provider: ${wrongTokens.join(", ")} — wrong template selected?`);
+  } else if (otherProviderTokens[provider]) {
+    pass("README env vars match selected provider");
+  }
+}
+
 // ── Main ──────────────────────────────
 console.log("\n🔐 ShipWithAI Auth — Setup Verification\n");
 
@@ -349,6 +423,7 @@ checkFileStructure(provider);
 checkDependencies(provider);
 checkSecurity();
 checkDangerousPatterns(provider);
+checkReadme(provider);
 
 // ── Summary ───────────────────────────
 console.log("\n" + "─".repeat(50));

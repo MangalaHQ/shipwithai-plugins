@@ -1,6 +1,6 @@
 {
   "skillId": "auth-setup",
-  "version": "1.6.1",
+  "version": "1.7.1",
   "evals": [
     {
       "id": "eval-01",
@@ -94,6 +94,41 @@
       "expectedBehavior": "Should detect shadcn/ui via components.json (Scenario A), SKIP globals.css generation, note the New York style, and proceed directly with Firebase Auth setup using existing theme. Should reference 10-existing-project-integration.md.",
       "category": "existing-project",
       "provider": "firebase"
+    },
+    {
+      "id": "eval-14",
+      "prompt": "Set up Firebase Auth and generate a complete README explaining how to configure the Firebase project",
+      "expectedBehavior": "Should run Step 8 — copy assets/templates/providers/firebase/README.md.tmpl, substitute {{PROJECT_NAME}}/{{NEXT_VERSION}}/{{PROVIDER}}, process <!-- IF oauth=google --> blocks based on user's Step 1a answer, write to project root README.md. Output must include Firebase Console link, deep-link to references/05-firebase-auth-guide.md OAuth checklist, full env vars table with 'Where to get it' column. Must NOT improvise content from memory.",
+      "category": "readme-generation",
+      "provider": "firebase"
+    },
+    {
+      "id": "eval-15",
+      "prompt": "Set up Better Auth with Drizzle, Resend email, and Google OAuth — also generate the README",
+      "expectedBehavior": "Should run Step 8 — copy better-auth/README.md.tmpl, keep <!-- IF oauth=google --> and <!-- IF email=resend --> blocks (delete other email branches), document BETTER_AUTH_SECRET (with openssl rand -hex 32 example), RESEND_API_KEY, GOOGLE_CLIENT_ID/SECRET in env table with source links. Verify no raw {{ placeholders or <!-- IF markers remain.",
+      "category": "readme-generation",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-16",
+      "prompt": "Run /shipwithai-auth:setup in a project that already has a README.md with my own content",
+      "expectedBehavior": "Step 0 detects existing README.md; before Step 8 generates anything, MUST call AskUserQuestion offering: append AUTH section, overwrite with README.md.bak backup, or save separately as README.AUTH.md. Must NOT silently overwrite the user's existing README.",
+      "category": "edge-case",
+      "provider": "any"
+    },
+    {
+      "id": "eval-17",
+      "prompt": "Just install the Better Auth packages and config files, don't generate any documentation",
+      "expectedBehavior": "Should set up auth.ts, auth-client.ts, schema, middleware, etc., but skip Step 8 (README generation) since user explicitly opted out. Step 2m guard should respect the opt-out and not force README creation. Should mention that user can run setup again later for full README.",
+      "category": "negative",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-18",
+      "prompt": "Add password reset flow to my existing Better Auth project — don't change anything else",
+      "expectedBehavior": "Should ONLY add reset-password.tsx and update auth client; should NOT regenerate README, should NOT run full Step 0 wizard, should NOT touch existing auth.ts beyond what's needed for password reset. README generation Step 8 must NOT trigger.",
+      "category": "negative",
+      "provider": "better-auth"
     }
   ]
 }
