@@ -1,7 +1,7 @@
 {
   "name": "shipwithai-auth",
   "description": "Set up production-ready auth in minutes. Supports Better Auth and Firebase Auth with OAuth social login, UI components, database schemas. Auto-detects existing themes. Run /shipwithai-auth:setup to start or /shipwithai-auth:doctor to diagnose issues.",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "author": {
     "name": "Ethan",
     "url": "https://shipwithai.io"

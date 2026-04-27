@@ -4,6 +4,26 @@ All notable changes to the shipwithai-auth plugin will be documented in this fil
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.7.1] - 2026-04-26
+
+### Added
+- **Provider-specific README templates** — `assets/templates/providers/firebase/README.md.tmpl` and `assets/templates/providers/better-auth/README.md.tmpl`. Each is a self-contained scaffold with prerequisites, step-by-step provider configuration (Firebase Console walkthrough / Better Auth secret generation + DB migration), env var table with "Where to get it" links, OAuth setup, troubleshooting, and production checklist. Uses `{{PLACEHOLDER}}` substitution and `<!-- IF key=value -->` conditional blocks for OAuth/email branches. Single source of truth: deep-links back to `references/05-firebase-auth-guide.md`, `references/02-better-auth-guide.md`, `references/07-oauth-social-login.md`, and `references/09-common-pitfalls.md` instead of duplicating content.
+- **`SKILL.md` Step 8 — Existing README guard** — Setup wizard now checks for an existing `README.md` at project root in Step 0, and Step 8 calls `AskUserQuestion` offering append / overwrite (with `.bak` backup) / save-separately. Eliminates silent overwrite of user-authored content.
+- **`SKILL.md` Step 8 — Placeholder fallback chain** — Spec for `{{PROJECT_NAME}}` resolution: `package.json` `name` → strip `@scope/` → `basename(cwd)` → literal `My App`. Prevents broken titles when `package.json` is missing or contains scoped/special-char names.
+- **Conditional block processor** — `<!-- IF oauth=google -->...<!-- /IF -->`, `<!-- IF email=resend -->...<!-- /IF -->`, etc. Step 8 keeps blocks that match user answers and deletes the rest (including the marker comments themselves) to avoid orphan markup.
+- **`scripts/verify-auth-setup.ts` — README assertions** — 5 new checks: README exists, no unresolved `{{PLACEHOLDERS}}`, no orphan `<!-- IF -->` markers, every env var in `.env.example` is documented in the README env table, and provider-mismatch detection (e.g., Firebase env vars in a Better Auth README signals wrong template selected).
+- **5 new evals** — `eval-14`/`eval-15` (Firebase + Better Auth README generation happy paths), `eval-16` (existing README → must prompt), `eval-17`/`eval-18` (negative cases — README generation must NOT trigger when user opts out or asks for a focused fix).
+
+### Changed
+- **`SKILL.md` Step 8** — Replaced 50-line inline boilerplate (with placeholder text like `[List all required env vars...]`) by a 65-line spec that points to the `.tmpl` files, documents the placeholder/conditional/fallback contract, and adds a verification checklist (no raw `{{`, no orphan markers, env vars cross-checked, provider console linked).
+- **`commands/setup.md` Step 2m** — Fixed off-by-one bug (referenced "SKILL.md Step 7" — Verify — instead of Step 8 — Generate README). Step 2m now lists the four sub-steps explicitly and is marked `CRITICAL — do not skip, even after compaction` so README generation can't be silently skipped.
+- **`commands/setup.md` Step 0 (item 6)** — Auto-discovery now also detects existing `README.md` at project root (used by Step 8a guard).
+- **`manifest.json`** — `auth-setup` description now mentions README generation; `updatedAt` bumped to 2026-04-26.
+
+### Fixed
+- **Sparse generated README** — Previous Step 8 produced a generic 30-line README without provider-config steps, env-var sources, or OAuth setup. Users (especially indie hackers new to Firebase/Better Auth) had no path from "wizard finished" to "app actually authenticates a user". The new templates walk through every external dashboard step and link the deep references for the 5-step Google OAuth checklist and 60 production pitfalls.
+- **Silent README overwrite** — Plugin no longer destroys an existing project README when run on a project scaffolded by `create-next-app` (or any project with prior README content).
+
 ## [1.7.0] - 2026-04-18
 
 ### Added
