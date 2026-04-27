@@ -1,6 +1,6 @@
 # Common Auth Pitfalls — From Production
 
-60 real bugs encountered building production apps. Check these before deploying.
+61 real bugs encountered building production apps. Check these before deploying.
 
 ## Session & Cookie Issues
 
@@ -268,3 +268,14 @@ Fix: Use `redirectTo: \`\${window.location.origin}/reset-password\`` instead of 
 **60. Forgot-password email link → 404 because reset-password page was never created**
 User clicks the password reset link from email but gets a 404. The `requestPasswordReset({ redirectTo })` sends users to `/reset-password?token=xxx`, but no page exists at that route.
 Fix: Copy `reset-password.tsx` from `assets/components/{provider}/` (e.g., `assets/components/better-auth/`) to `app/(auth)/reset-password/page.tsx`. This page reads the `token` query param and calls `authClient.resetPassword({ newPassword, token })`. Also copy `forgot-password.tsx` to `app/(auth)/forgot-password/page.tsx` — both pages are required for the full flow.
+
+**61. `for...of` over Map/Set fails build — "can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher"**
+Generated rate-limit code in `app/api/auth/session/route.ts` uses `for (const [k, v] of attempts) { ... }` to iterate a `Map`. `create-next-app@14`'s default `tsconfig.json` ships with `"target": "es5"` and no `downlevelIteration` flag, so the type-check phase of `next build` fails:
+`Type 'Map<string, ...>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.`
+Affects: any generated route that iterates a `Map` or `Set` with `for...of` or destructured entries (rate limiters, session caches, attempt trackers).
+Fix (preferred): Use `.forEach((v, k) => ...)` instead of `for...of` — works on all targets, no tsconfig change needed:
+```ts
+attempts.forEach((v, k) => { if (now > v.resetAt) attempts.delete(k); });
+```
+Alternative fix: Use `Array.from(map.entries())` then iterate the array, or `Array.from(map.keys())` if you only need keys.
+Last resort (do NOT prefer): Bump `tsconfig.json` `"target"` from `"es5"` to `"es2015"` (or higher), or add `"downlevelIteration": true`. This changes the emitted JS for the whole project — risky on a fresh scaffold. Plugin assets MUST default to `forEach` to stay compatible with the stock Next.js 14 tsconfig.

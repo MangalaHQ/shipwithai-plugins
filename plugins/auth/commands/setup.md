@@ -19,7 +19,7 @@ Scan for:
 3. **Version compat** — React ≥18, Node ≥18. Block if incompatible.
 4. **ORM** — `drizzle.config.ts` → Drizzle | `prisma/schema.prisma` → Prisma | deps fallback
 5. **Existing auth** — `better-auth`, `firebase`, `@clerk/nextjs`, `next-auth`, `@supabase/ssr` in deps
-6. **Existing pages** — `(auth)/login/`, `api/auth/`, `middleware.ts`
+6. **Existing pages** — `(auth)/login/`, `api/auth/`, `middleware.ts`, `README.md` at project root (used by Step 2m)
 7. **Package manager** — lockfile detection (pnpm/yarn/bun/npm)
 8. **UI library** — `components.json` → shadcn/ui | Tailwind | MUI/Chakra/Mantine
 9. **Design system** — existing `globals.css` with shadcn CSS vars → Scenario A
@@ -281,8 +281,18 @@ Copy and adapt components from `skills/auth-setup/assets/components/`:
 ### 2l. Create Protected Layout
 Add server-side session verification at `src/app/(protected)/layout.tsx`.
 
-### 2m. Generate README
-Generate a README.md with setup instructions following SKILL.md Step 7.
+### 2m. Generate README (CRITICAL — do not skip, even after compaction)
+
+This is the **final user-facing artifact**. Even if context is limited, this MUST run.
+
+Follow SKILL.md **Step 8** exactly:
+
+1. **Step 8a** — Detect existing `README.md`. If present, call `AskUserQuestion` (append / overwrite-with-backup / separate file).
+2. **Step 8b** — Read the provider's `assets/templates/providers/{better-auth,firebase}/README.md.tmpl` and substitute `{{PLACEHOLDERS}}` using the fallback chain in SKILL.md.
+3. **Step 8c** — Process `<!-- IF key=value -->` conditional blocks based on user's Step 1a (OAuth) and Step 3 (email) answers. Delete blocks that don't match; remove the marker comments.
+4. **Step 8d** — Run the verification checklist (no raw `{{`, no `<!-- IF`, env vars match `.env.example`, at least one provider console link, no orphan intra-doc links).
+
+If any verification check fails, re-run the substitution. Do NOT report setup as complete until README is generated and verified.
 
 ## Step 3: Verify
 

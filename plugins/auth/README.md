@@ -9,7 +9,8 @@ Production-ready authentication for any web app in under 45 minutes.
 - **Google OAuth:** Social login setup with guides (GitHub & Apple coming soon)
 - **UI components:** Login, register, forgot password pages (shadcn/ui)
 - **Database schemas:** Drizzle ORM, Prisma, Supabase SQL templates
-- **60 production pitfalls:** Real bugs from production apps and how to avoid them
+- **61 production pitfalls:** Real bugs from production apps and how to avoid them
+- **Provider-specific README:** Generated at setup with full Firebase Console / Better Auth walkthrough, env-var sources, and pitfall cross-references
 - **Interactive wizard:** `/shipwithai-auth:setup` command for guided setup
 
 ## Quick Start

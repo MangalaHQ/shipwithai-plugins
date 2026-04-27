@@ -4,9 +4,9 @@
     {
       "skillId": "auth-setup",
       "name": "auth-setup",
-      "description": "Set up authentication for web apps. Supports Better Auth and Firebase Auth. Handles email/password, Google OAuth, sessions, middleware, protected routes. Includes UI components. Auto-detects existing project themes. (GitHub & Apple OAuth coming soon)",
+      "description": "Set up auth for Next.js apps. Better Auth & Firebase. Email/password, Google OAuth, sessions, middleware, UI components, provider README with full config steps. Auto-detects themes.",
       "creatorType": "community",
-      "updatedAt": "2026-04-16T00:00:00Z",
+      "updatedAt": "2026-04-26T00:00:00Z",
       "enabled": true
     },
     {

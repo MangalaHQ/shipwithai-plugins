@@ -195,7 +195,11 @@ function checkRateLimit(key: string, max = 5, windowMs = 60_000): boolean {
   const now = Date.now();
   // Evict expired entries if Map grows too large
   if (attempts.size > MAX_ENTRIES) {
-    for (const [k, v] of attempts) { if (now > v.resetAt) attempts.delete(k); }
+    // Use forEach (not `for...of`) — Map iteration with `for...of` requires
+    // tsconfig `target: es2015+` or `downlevelIteration: true`. Next.js 14's
+    // default tsconfig uses `target: es5`, which breaks `for (const [k, v] of map)`.
+    // See pitfall #61 in references/09-common-pitfalls.md.
+    attempts.forEach((v, k) => { if (now > v.resetAt) attempts.delete(k); });
   }
   const entry = attempts.get(key);
   if (!entry || now > entry.resetAt) {

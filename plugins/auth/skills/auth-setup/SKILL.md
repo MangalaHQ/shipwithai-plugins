@@ -1,7 +1,7 @@
 ---
 name: auth-setup
 description: "Set up authentication for web apps. Supports Better Auth and Firebase Auth. Handles email/password, Google OAuth, sessions, middleware, protected routes. Includes UI components. Auto-detects existing project themes. (GitHub & Apple OAuth coming soon)"
-version: 1.6.1
+version: 1.7.1
 license: MIT
 ---
 
@@ -409,57 +409,45 @@ Check the project's Next.js version in `package.json` BEFORE writing the config.
 
 Run `scripts/verify-auth-setup.ts` to confirm auth works end-to-end. The script now includes **dangerous code pattern detection** — it catches module-scope SDK instantiation, wrong middleware patterns, missing Suspense wrappers, and other pitfalls automatically.
 
-### Step 8: Generate README
+### Step 8: Generate README (CRITICAL — must run, even after compaction)
 
-Create a README.md for the generated project. Include:
+Copy the provider's `assets/templates/providers/{better-auth|firebase}/README.md.tmpl`, substitute placeholders, write to **end-user project root** as `README.md`. Do NOT improvise — template is source of truth.
 
-```markdown
-# [Project Name]
+**MANDATORY FLOW: Read → Ask → Write.** Never call `Write` on `README.md` without first checking existence and asking the user. The `Write` tool fails with `Error writing file` when the target exists and has not been Read in this session — this is a guard against silent overwrites.
 
-## Authentication Setup
+**Step 8a — Existing README guard (MUST run before any Write):**
 
-This project uses [Provider Name] for authentication.
+1. **Check existence FIRST.** Use `Glob` with pattern `README.md` (or `Bash: ls README.md 2>/dev/null`) to detect.
+2. **If README.md does NOT exist** → skip to Step 8b, proceed with `Write` directly.
+3. **If README.md EXISTS:**
+   a. **Read it first** (`Read README.md`) — required before any later `Write` to that path AND so you can summarize current content to the user.
+   b. **Call `AskUserQuestion`** with these 3 options (do NOT silently pick one):
+      - **A) Append AUTH section** (default — preserves existing content, adds auth docs at the end via `Edit`)
+      - **B) Overwrite** (backup current → `README.md.bak` via `Bash: cp README.md README.md.bak`, then `Write` new README)
+      - **C) Save separately** as `README.AUTH.md` (`Write` to a new path; existing README untouched)
+   c. **Wait for the user's answer.** Do NOT proceed on assumption.
+   d. **Execute the chosen branch:**
+      - **A (Append):** Use `Edit` to append the rendered template under a new `## Authentication` section. Do NOT use `Write` (it would overwrite).
+      - **B (Overwrite):** Run backup `Bash` command first → verify `.bak` exists → then `Write` README.md with new content.
+      - **C (Separate):** `Write` to `README.AUTH.md` instead of `README.md`. Mention the new file in the final summary.
 
-### Prerequisites
+**Recovery — if `Write README.md` already failed with `Error writing file`:** The file exists and was not Read. Do NOT retry the same `Write`. Instead: `Read README.md` → run Step 8a's `AskUserQuestion` → execute the chosen branch.
 
-- Node.js 18+
-- [Provider-specific prerequisites]
+**Step 8b — Substitute placeholders (double-brace `{{NAME}}`):**
 
-### Getting Started
+| Placeholder | Source | Fallback chain |
+|---|---|---|
+| `{{PROJECT_NAME}}` | `package.json` `name` | 1) strip `@scope/` → 2) basename(cwd) → 3) `My App` |
+| `{{NEXT_VERSION}}` | Step 0b | `14+` if unknown |
+| `{{ORM}}` | Step 0c | `Drizzle` (Better Auth default) |
 
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Copy `.env.example` to `.env.local`: `cp .env.example .env.local`
-4. Fill in the environment variables (see below)
-5. Run the development server: `npm run dev`
-6. Open [http://localhost:3000](http://localhost:3000)
+> Provider name is pre-resolved by selecting the correct template file (`firebase/` vs `better-auth/`), not via placeholder.
 
-### Environment Variables
+**Step 8c — Process conditional blocks** `<!-- IF key=value -->...<!-- /IF -->`:
+- `oauth=google` → keep if Step 1a included Google, else delete (and remove markers).
+- `email=resend|console|other` → keep matching Step 3 choice, delete the rest.
 
-| Variable | Description | Where to get it |
-|----------|-------------|-----------------|
-| [List all required env vars with descriptions and links to where to get them] |
-
-### For Firebase Auth:
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a project (or select existing)
-3. Go to Project Settings → General → Your apps → Add web app
-4. Copy the config values to `NEXT_PUBLIC_FIREBASE_*` vars
-5. Go to Project Settings → Service accounts → Generate new private key
-6. Copy `project_id`, `client_email`, `private_key` to `FIREBASE_*` vars
-7. Go to Authentication → Sign-in method → Enable Email/Password and Google
-
-### Auth Flow
-
-- `/login` — Sign in with email/password or Google
-- `/register` — Create a new account
-- `/forgot-password` — Reset password via email
-- `/dashboard` — Protected page (requires authentication)
-
-### Project Structure
-
-[List key files and their purpose]
-```
+**Step 8d — Verify (mandatory):** No raw `{{` remains. No raw `<!-- IF` remains. Every env var in `.env.example` appears in the README env table. At least one link to provider's console (Firebase / Google Cloud / Resend). No orphan intra-doc anchor links. If any check fails → re-run substitution.
 
 ## CRITICAL CODE RULES — Violating any of these causes runtime crashes
 
