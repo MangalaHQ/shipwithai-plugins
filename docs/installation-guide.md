@@ -4,12 +4,38 @@ How to install and use ShipWithAI plugins.
 
 ---
 
-## Method 1: Claude Plugin Marketplace (Recommended)
+## Method 0: Cowork — Claude Desktop App (Recommended for non-developers)
 
-Install directly from the marketplace:
+The easiest way to use ShipWithAI plugins — no terminal required.
+
+1. Open the **Claude desktop app** and enable Cowork mode
+   (Settings → Desktop app → Cowork)
+2. Open **Settings → Extensions → Browse Extension → Plugins → Personal** and click **Add marketplace**
+3. Paste the marketplace URL:
+   ```
+   https://github.com/MangalaHQ/shipwithai-plugins
+   ```
+4. Open the **Plugins** tab, locate `shipwithai-auth`, and click **Install**
+5. In any Cowork session, trigger the plugin in plain English:
+   > "Set up authentication for my Next.js project"
+
+   Or call a skill explicitly: `/shipwithai-auth:setup`
+
+The marketplace stays registered across sessions, and you'll be notified
+when new plugin versions are published.
+
+---
+
+## Method 1: Claude Code CLI Marketplace
+
+Register the marketplace, then install any plugin by name:
 
 ```bash
-claude plugin install shipwithai-auth
+# One-time: register the marketplace
+/plugin marketplace add MangalaHQ/shipwithai-plugins
+
+# Install the plugin
+/plugin install shipwithai-auth@shipwithai
 ```
 
 Once installed, use the plugin in any project:
@@ -28,7 +54,7 @@ Clone only the plugin you need without downloading the entire monorepo:
 ```bash
 # Clone the repo skeleton (no file content yet)
 git clone --filter=blob:none --sparse \
-  https://github.com/ShipWithAI/shipwithai-plugins.git
+  https://github.com/MangalaHQ/shipwithai-plugins.git
 cd shipwithai-plugins
 
 # Check out only the auth plugin
@@ -57,7 +83,7 @@ git sparse-checkout list
 For team members or contributors who need the entire repo:
 
 ```bash
-git clone https://github.com/ShipWithAI/shipwithai-plugins.git
+git clone https://github.com/MangalaHQ/shipwithai-plugins.git
 cd shipwithai-plugins
 
 # Load a specific plugin

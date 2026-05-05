@@ -1,20 +1,41 @@
 # shipwithai-plugins
 
-**SDLC Toolkit** — Monorepo chứa toàn bộ Claude Code plugins của ShipWithAI, covering full Software Development Life Cycle.
+**SDLC Toolkit** — Monorepo chứa toàn bộ Claude plugins của ShipWithAI, covering full Software Development Life Cycle.
 
 > Core IP của ShipWithAI. Mỗi plugin giải quyết 1 pain point cụ thể trong SDLC.
+
+> ✅ Compatible with **Cowork** (Claude desktop app), **Claude Code CLI**, and the Claude Agent SDK.
 
 ---
 
 ## Quick Start
 
-### Install via Claude Code (no cloning required)
+### Install via Cowork (Claude desktop app — recommended)
+
+For non-developers and anyone using the Claude desktop app:
+
+1. Open the **Claude desktop app** and enable Cowork mode
+   (Settings → Desktop app → Cowork)
+2. Go to **Settings → Extensions → Browse Extension → Plugins → Personal** and click **Add marketplace**
+3. Paste this URL and confirm:
+   ```
+   https://github.com/MangalaHQ/shipwithai-plugins
+   ```
+4. Switch to the **Plugins** tab, find `shipwithai-auth`, and click **Install**
+5. Start a Cowork session and try it out:
+   > "Set up authentication for my Next.js project"
+
+   Or invoke a skill directly: `/shipwithai-auth:setup`
+
+> Once installed, the marketplace stays registered — new plugin updates appear automatically.
+
+### Install via Claude Code CLI (for developers)
 
 Open Claude Code in any directory and run:
 
 ```bash
 # Register the ShipWithAI marketplace (one-time setup)
-/plugin marketplace add ShipWithAI/shipwithai-plugins
+/plugin marketplace add MangalaHQ/shipwithai-plugins
 
 # Install any plugin by name
 /plugin install shipwithai-auth@shipwithai
@@ -23,7 +44,7 @@ Open Claude Code in any directory and run:
 ### Local development (see [CONTRIBUTING.md](./CONTRIBUTING.md))
 
 ```bash
-git clone git@github.com:ShipWithAI/shipwithai-plugins.git
+git clone git@github.com:MangalaHQ/shipwithai-plugins.git
 cd shipwithai-plugins
 
 # Load a plugin for a single session
