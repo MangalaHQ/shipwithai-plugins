@@ -1,0 +1,21 @@
+{
+  "lastUpdated": 1741046400000,
+  "skills": [
+    {
+      "skillId": "auth-setup",
+      "name": "auth-setup",
+      "description": "Set up auth for Next.js apps. Better Auth & Firebase. Email/password, Google OAuth, sessions, middleware, UI components, provider README with full config steps. Auto-detects themes.",
+      "creatorType": "community",
+      "updatedAt": "2026-04-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "auth-doctor",
+      "name": "auth-doctor",
+      "description": "Diagnose and fix issues in existing auth setups. Scans environment, files, security, middleware, OAuth, database, and dangerous code patterns. Produces scored health report with actionable fixes.",
+      "creatorType": "community",
+      "updatedAt": "2026-04-16T00:00:00Z",
+      "enabled": true
+    }
+  ]
+}

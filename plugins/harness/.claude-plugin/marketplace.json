@@ -1,0 +1,33 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "shipwithai-auth",
+  "description": "Set up production-ready auth in minutes. Supports Better Auth and Firebase Auth with OAuth social login, UI components, database schemas. Auto-detects existing themes.",
+  "owner": {
+    "name": "ShipWithAI",
+    "email": "support@shipwithai.com"
+  },
+  "plugins": [
+    {
+      "name": "shipwithai-auth",
+      "description": "Set up production-ready auth in minutes. Supports Better Auth and Firebase Auth with OAuth social login, UI components, database schemas. Auto-detects existing themes.",
+      "version": "1.7.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./",
+      "category": "productivity",
+      "tags": [
+        "auth",
+        "authentication",
+        "login",
+        "oauth",
+        "google-oauth",
+        "better-auth",
+        "firebase",
+        "nextjs"
+      ]
+    }
+  ],
+  "version": "1.7.0"
+}
