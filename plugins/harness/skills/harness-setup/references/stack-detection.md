@@ -10,8 +10,10 @@ Run checks in this exact order. Stop at first match.
 1. `pom.xml` exists → **Spring Boot**
 2. `package.json` exists AND (`dependencies.next` OR `devDependencies.next` is set) → **Next.js**
 3. `composer.json` exists → **Laravel**
-4. `package.json` exists (no `next`) → **Node/generic**
-5. None of the above → **Generic**
+4. `requirements.txt` exists AND contains `fastapi` → **FastAPI**
+   OR `pyproject.toml` exists AND contains `fastapi` in dependencies → **FastAPI**
+5. `package.json` exists (no `next`) → **Node/generic**
+6. None of the above → **Generic**
 
 ## Token Auto-Fill Sources
 
@@ -43,6 +45,8 @@ For Laravel: always `composer` for PHP packages + detect JS lockfile for fronten
 | `@prisma/client` in package.json | Prisma |
 | `spring-data-jpa` in pom.xml | Spring Data JPA |
 | `illuminate/database` (always in Laravel) | Eloquent |
+| `sqlalchemy` in requirements.txt | SQLAlchemy |
+| `tortoise-orm` in requirements.txt | Tortoise ORM |
 | None detected | "Not configured" |
 
 ### TEST_FRAMEWORK
@@ -53,6 +57,7 @@ For Laravel: always `composer` for PHP packages + detect JS lockfile for fronten
 | `phpunit/phpunit` | PHPUnit |
 | `pestphp/pest` | Pest |
 | `junit-jupiter-api` in pom.xml | JUnit 5 |
+| `pytest` in requirements.txt or pyproject.toml | pytest |
 | None | "Not configured" |
 
 ## Edge Cases

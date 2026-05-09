@@ -33,6 +33,18 @@
       "reason": "Stack-specific initialization request"
     },
     {
+      "id": "trigger-6",
+      "prompt": "Set up Claude Code for my FastAPI project",
+      "shouldTrigger": true,
+      "reason": "Stack-specific setup request for FastAPI"
+    },
+    {
+      "id": "trigger-7",
+      "prompt": "Generate CLAUDE.md for my Python API",
+      "shouldTrigger": true,
+      "reason": "Python API = FastAPI stack detection"
+    },
+    {
       "id": "no-trigger-1",
       "prompt": "Check my existing CLAUDE.md for problems",
       "shouldTrigger": false,

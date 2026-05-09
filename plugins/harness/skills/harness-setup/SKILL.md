@@ -26,6 +26,7 @@ Before asking ANY questions, scan these files:
 | `pom.xml` | Spring Boot |
 | `package.json` with `"next"` in deps | Next.js |
 | `composer.json` | Laravel |
+| `requirements.txt` or `pyproject.toml` with `fastapi` dep | FastAPI |
 | `package.json` without `"next"` | Node/generic |
 | None of the above | Generic |
 
@@ -79,6 +80,7 @@ After detection and Q1/Q2, route to the stack-specific bundle:
 | Next.js | `bundles/nextjs.md` |
 | Laravel | `bundles/laravel.md` |
 | Spring Boot | `bundles/spring-boot.md` |
+| FastAPI | `bundles/fastapi.md` |
 | Generic/unknown | use `bundles/nextjs.md` as closest default, ask user to confirm |
 
 The bundle contains the full generation instructions: exactly which files to create, their content, and validation steps.
