@@ -35,6 +35,9 @@ Check in this order. Stop when you find the command.
    - Rust: `cargo run` / `cargo test` / `cargo clippy`
    - Laravel: `php artisan serve` / `php artisan test` / `./vendor/bin/pint`
    - FastAPI/Django/Flask: `uvicorn main:app` or `python -m flask run` / `pytest`
+   - Ruby on Rails: `rails server` / `rails test` / `rubocop`
+   - Flutter: `flutter run` / `flutter test` / `flutter analyze`
+   - Kotlin/Gradle: `./gradlew bootRun` / `./gradlew test` / `./gradlew ktlintCheck`
 
 **Write only commands you found evidence for. Omit types (build/lint) with no evidence.**
 
@@ -58,7 +61,7 @@ Describe each in one line. Skip `node_modules/`, `.git/`, build artifacts.
 | `@prisma/client` dep | `Prisma — schema at prisma/schema.prisma` |
 | `sqlalchemy` dep | `SQLAlchemy — models in <detected path>` |
 | `tortoise-orm` dep | `Tortoise ORM — models in <detected path>` |
-| `spring-data-jpa` in pom.xml | `Spring Data JPA — entities in <detected path>` |
+| `spring-boot-starter-data-jpa` in pom.xml | `Spring Data JPA — entities in <detected path>` |
 | `gorm.io/gorm` | `GORM — models in <detected path>` |
 | `diesel` in Cargo.toml | `Diesel ORM` |
 | `illuminate/database` (Laravel) | `Eloquent ORM — models in app/Models/` |
