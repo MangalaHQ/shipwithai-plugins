@@ -1,20 +1,20 @@
 {
-  "lastUpdated": 1741046400000,
+  "lastUpdated": 1746748800000,
   "skills": [
     {
-      "skillId": "auth-setup",
-      "name": "auth-setup",
-      "description": "Set up auth for Next.js apps. Better Auth & Firebase. Email/password, Google OAuth, sessions, middleware, UI components, provider README with full config steps. Auto-detects themes.",
+      "skillId": "harness-setup",
+      "name": "harness-setup",
+      "description": "Generate a Claude Code harness for your project. Auto-detects stack (Next.js, Laravel, Spring Boot). Generates CLAUDE.md, settings.json, and safety hooks. Run /shipwithai-harness:setup",
       "creatorType": "community",
-      "updatedAt": "2026-04-26T00:00:00Z",
+      "updatedAt": "2026-05-08T00:00:00Z",
       "enabled": true
     },
     {
-      "skillId": "auth-doctor",
-      "name": "auth-doctor",
-      "description": "Diagnose and fix issues in existing auth setups. Scans environment, files, security, middleware, OAuth, database, and dangerous code patterns. Produces scored health report with actionable fixes.",
+      "skillId": "harness-doctor",
+      "name": "harness-doctor",
+      "description": "Diagnose and fix your Claude Code harness. Scans CLAUDE.md, settings.json, hooks health, and stack consistency. Produces scored report with actionable fixes.",
       "creatorType": "community",
-      "updatedAt": "2026-04-16T00:00:00Z",
+      "updatedAt": "2026-05-08T00:00:00Z",
       "enabled": true
     }
   ]

@@ -1,17 +1,17 @@
 {
-  "name": "shipwithai-auth",
-  "description": "Set up production-ready auth in minutes. Supports Better Auth and Firebase Auth with OAuth social login, UI components, database schemas. Auto-detects existing themes. Run /shipwithai-auth:setup to start or /shipwithai-auth:doctor to diagnose issues.",
-  "version": "1.7.1",
+  "name": "shipwithai-harness",
+  "description": "Generate a production-ready Claude Code harness for your project. Auto-detects stack (Next.js, Laravel, Spring Boot). Generates CLAUDE.md, settings.json, and safety hooks in one command.",
+  "version": "1.0.0",
   "author": {
-    "name": "Ethan",
+    "name": "ShipWithAI",
     "url": "https://shipwithai.io"
   },
-  "homepage": "https://shipwithai.io/plugins/auth",
-  "repository": "https://github.com/shipwithai/shipwithai-auth",
+  "homepage": "https://shipwithai.io/plugins/harness",
+  "repository": "https://github.com/MangalaHQ/shipwithai-plugins",
   "license": "MIT",
-  "keywords": ["auth", "authentication", "login", "oauth", "google-oauth", "better-auth", "firebase", "nextjs"],
+  "keywords": ["claude-code", "harness", "setup", "nextjs", "laravel", "spring-boot", "hooks", "settings"],
   "skills": [
-    "./skills/auth-setup",
-    "./skills/auth-doctor"
+    "./skills/harness-setup",
+    "./skills/harness-doctor"
   ]
 }
