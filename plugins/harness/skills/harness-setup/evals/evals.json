@@ -1,6 +1,6 @@
 {
   "skillId": "harness-setup",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "evals": [
     {
       "id": "trigger-1",
@@ -34,15 +34,21 @@
     },
     {
       "id": "trigger-6",
-      "prompt": "Set up Claude Code for my FastAPI project",
+      "prompt": "Set up Claude Code for my Go API",
       "shouldTrigger": true,
-      "reason": "Stack-specific setup request for FastAPI"
+      "reason": "Stack not in v1.0 — validates any-stack support"
     },
     {
       "id": "trigger-7",
-      "prompt": "Generate CLAUDE.md for my Python API",
+      "prompt": "My Rust project needs a CLAUDE.md — can you generate one?",
       "shouldTrigger": true,
-      "reason": "Python API = FastAPI stack detection"
+      "reason": "Stack not in v1.0 — validates any-stack support"
+    },
+    {
+      "id": "trigger-8",
+      "prompt": "Generate a harness for this Ruby on Rails app",
+      "shouldTrigger": true,
+      "reason": "Stack not in v1.0 — validates any-stack support"
     },
     {
       "id": "no-trigger-1",
