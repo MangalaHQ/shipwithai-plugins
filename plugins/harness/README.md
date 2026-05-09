@@ -1,77 +1,64 @@
-# ShipWithAI Auth Plugin
+# shipwithai-harness
 
-Production-ready authentication for any web app in under 45 minutes.
+Generate a production-ready Claude Code harness for your project in under 2 minutes.
 
-## What's Inside
+## What It Does
 
-- **2 auth providers:** Better Auth, Firebase Auth (Clerk, Auth.js, Supabase Auth coming soon)
-- **Decision framework:** Helps you choose the right provider for your project
-- **Google OAuth:** Social login setup with guides (GitHub & Apple coming soon)
-- **UI components:** Login, register, forgot password pages (shadcn/ui)
-- **Database schemas:** Drizzle ORM, Prisma, Supabase SQL templates
-- **61 production pitfalls:** Real bugs from production apps and how to avoid them
-- **Provider-specific README:** Generated at setup with full Firebase Console / Better Auth walkthrough, env-var sources, and pitfall cross-references
-- **Interactive wizard:** `/shipwithai-auth:setup` command for guided setup
+Scans your project, detects the tech stack, and generates:
 
-## Quick Start
+- **`CLAUDE.md`** — Filled with your project's description, commands, architecture, and conventions
+- **`.claude/settings.json`** — Balanced permission rules (deny dangerous, ask before install, allow dev tools)
+- **`.claude/hooks/validate-command.py`** — Blocks fork bombs, curl|bash, force push, and other dangerous patterns
+- **`.claude/hooks/protect-files.py`** — Hard-blocks writes to `.env`, `.pem`, `.key` files
+- **`docs/ARCHITECTURE.md`** — Architecture skeleton for your stack
 
-### Install the plugin
+## Supported Stacks
 
-```bash
-claude --plugin-dir ./shipwithai-auth
-```
+| Stack | Detection |
+|---|---|
+| Next.js | `package.json` with `next` dependency |
+| Laravel | `composer.json` |
+| Spring Boot | `pom.xml` |
 
-### Run the setup wizard
-
-```bash
-/shipwithai-auth:setup
-```
-
-The wizard will ask you to choose a provider, OAuth options, and database ORM — then generate everything.
-
-### Or just chat
-
-```text
-> Set up Firebase Auth with Google login for my Next.js app
-```
-
-Claude will automatically use the auth-setup skill.
-
-## Supported Providers
-
-| Provider | Cost | Best For | Status |
-|----------|------|----------|--------|
-| Better Auth | Free forever | Self-hosted, full control | **Supported** |
-| Firebase Auth | Free < 50K MAU | Mobile/KMP, Google ecosystem | **Supported** |
-| Clerk | Free < 10K MAU | Fastest setup, pre-built UI | Coming soon |
-| Auth.js | Free forever | Lightweight, educational | Coming soon |
-| Supabase Auth | Free < 50K MAU | Postgres-native, RLS | Coming soon |
-
-## File Structure
-
-```text
-shipwithai-auth/
-├── .claude-plugin/plugin.json       # Plugin metadata
-├── skills/auth-setup/
-│   ├── SKILL.md                     # Decision framework + quick start
-│   ├── references/                  # Detailed guides per provider
-│   └── assets/                      # UI components, schemas, configs
-├── commands/setup.md                # Interactive wizard
-└── README.md
-```
-
-## For Contributors
-
-Claude Code conventions, SOT docs, and security guardrails live in `CLAUDE.md`, `.claude/rules/`, and `docs/`. Before contributing:
+## Install
 
 ```bash
-cp CLAUDE.local.md.example CLAUDE.local.md  # then edit blueprint_path
+/plugin install shipwithai-harness@shipwithai
 ```
 
-See `CLAUDE.md` → "SOT References" for the full map, and `docs/decisions/` for architectural decisions.
+## Usage
 
-## Links
+```bash
+/shipwithai-harness:setup    # Generate harness for current project
+/shipwithai-harness:doctor   # Diagnose existing harness health
+```
 
-- Website: https://shipwithai.io
-- Full kit: https://shipwithai.io/plugins/auth
-- Author: Ethan (truongnguyenptit@gmail.com)
+## What It Asks You
+
+Only 2 things:
+1. Describe your project in one sentence
+2. Any custom conventions? (optional)
+
+Everything else is auto-detected from your project files.
+
+## How It Works
+
+1. **Detect** — Scans `pom.xml`, `composer.json`, `package.json` to identify your stack
+2. **Auto-fill** — Reads project name, port, package manager, database, test framework from your files
+3. **Ask** — 2 questions only: project description + optional conventions
+4. **Generate** — Creates 5 files tailored to your stack
+5. **Validate** — Confirms all files are in place and hooks are executable
+
+## Doctor
+
+```bash
+/shipwithai-harness:doctor
+```
+
+Runs 4 health checks:
+- **Memory** — CLAUDE.md complete, no unfilled tokens, not stale
+- **Permission** — settings.json valid, balanced rules
+- **Hooks** — hooks present, executable, wired correctly
+- **Stack** — detected stack matches CLAUDE.md
+
+Produces a scored report with actionable fixes.
