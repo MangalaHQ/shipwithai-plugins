@@ -1,0 +1,49 @@
+# CLAUDE.md
+
+## Project
+{{PROJECT_DESCRIPTION}}
+
+**Stack:** Spring Boot · Java · {{DATABASE}}
+**Package:** {{PACKAGE}}
+**Port:** {{PORT}}
+**Tests:** {{TEST_FRAMEWORK}}
+**Last verified:** {{DATE}}
+
+## Commands
+```bash
+./mvnw spring-boot:run               # Start dev server (http://localhost:{{PORT}})
+./mvnw test                          # Run JUnit 5 tests
+./mvnw spotless:apply                # Format (Google Java Format)
+./mvnw verify                        # Full build + tests + checks
+./mvnw dependency:tree               # Inspect dependency tree
+```
+
+## Architecture
+```
+src/main/java/{{PACKAGE}}/
+  controller/   ← @RestController — HTTP handling only
+  service/      ← @Service — business logic
+  repository/   ← @Repository — Spring Data JPA interfaces
+  model/        ← @Entity — JPA entities
+  dto/          ← Request/response DTOs (no entities in API layer)
+src/main/resources/
+  application.properties
+src/test/java/{{PACKAGE}}/
+  controller/   ← @WebMvcTest slice tests
+  service/      ← @ExtendWith(MockitoExtension) unit tests
+  integration/  ← @SpringBootTest + Testcontainers
+```
+
+## Key Conventions
+- @Valid on @RequestBody — always validate at controller boundary
+- Return DTOs from controllers, never @Entity directly
+- Repository methods: Spring Data interface declarations — no JPQL unless necessary
+- Testcontainers for integration tests — no H2 (different SQL dialect)
+{{#if CUSTOM_CONVENTIONS}}
+## Project-Specific Conventions
+{{CUSTOM_CONVENTIONS}}
+{{/if}}
+## Boundaries
+- No business logic in controllers or repositories
+- No @Entity objects in API responses — always map to DTO
+- Transaction boundaries at @Service layer, not @Repository

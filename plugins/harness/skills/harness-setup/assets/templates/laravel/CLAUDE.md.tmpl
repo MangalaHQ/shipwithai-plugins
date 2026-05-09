@@ -1,0 +1,50 @@
+# CLAUDE.md
+
+## Project
+{{PROJECT_DESCRIPTION}}
+
+**Stack:** Laravel · PHP · {{DATABASE}}
+**Package manager:** composer (PHP) + {{PKG_MANAGER}} (frontend)
+**Port:** {{PORT}}
+**Tests:** {{TEST_FRAMEWORK}}
+**Last verified:** {{DATE}}
+
+## Commands
+```bash
+php artisan serve                    # Start dev server (http://localhost:{{PORT}})
+php artisan test                     # Run {{TEST_FRAMEWORK}} tests
+./vendor/bin/pint                    # Format (Laravel Pint)
+php artisan migrate                  # Run migrations
+php artisan migrate:rollback         # Rollback last migration
+php artisan make:controller Foo      # Scaffold controller
+php artisan make:model Foo -m        # Scaffold model + migration
+```
+
+## Architecture
+```
+app/
+  Http/Controllers/   ← Request handling, thin logic
+  Models/             ← Eloquent models
+  Services/           ← Business logic (keep controllers thin)
+database/migrations/  ← Schema changes (append-only)
+routes/
+  web.php             ← Web routes
+  api.php             ← API routes
+tests/
+  Feature/            ← Feature tests (HTTP layer)
+  Unit/               ← Unit tests (services, models)
+```
+
+## Key Conventions
+- Services handle business logic — controllers call services, not models directly
+- Validate with Form Requests (`php artisan make:request`), not inline
+- Use Eloquent relationships — avoid raw SQL
+- Test with {{TEST_FRAMEWORK}} against a real SQLite test database
+{{#if CUSTOM_CONVENTIONS}}
+## Project-Specific Conventions
+{{CUSTOM_CONVENTIONS}}
+{{/if}}
+## Boundaries
+- No business logic in controllers
+- No queries in views
+- Migrations are append-only — never edit an existing migration after it runs
