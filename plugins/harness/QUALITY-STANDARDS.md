@@ -1,4 +1,4 @@
-# ShipWithAI Auth — Quality Standards & Evaluation Criteria
+# ShipWithAI Harness — Quality Standards & Evaluation Criteria
 
 > This document defines the quality standards that plugins must meet before shipping to market.
 > Each criterion has 3 levels: **Must Have** (mandatory), **Should Have** (should have), **Nice to Have** (nice to have).
@@ -8,26 +8,26 @@
 ## 1. Functional Completeness — Does the plugin work?
 
 ### Must Have
-- [ ] Each provider (2/2: Better Auth, Firebase Auth) must be setupable from zero to successful login in **< 10 minutes** according to guide
-- [ ] Email/password signup → login → logout works for each provider
-- [ ] At least 1 OAuth provider (Google) works end-to-end for each auth provider
-- [ ] Session persists across page reload (doesn't log out on F5)
-- [ ] Protected route redirects to /login when not authenticated
-- [ ] Sign out completely clears session (cookie, state)
-- [ ] `/shipwithai-auth:setup` command runs, asks correct questions, creates correct files
+- [ ] `/shipwithai-harness:setup` runs, scans project silently, asks exactly 2 questions, generates CLAUDE.md + settings.json + 2 hooks + docs/ARCHITECTURE.md
+- [ ] Works on Next.js, Spring Boot, Laravel, FastAPI projects (4 reference stacks)
+- [ ] Works on unlisted stacks (Go, Rust, Rails) without crashing — falls back to generic scan
+- [ ] Generated CLAUDE.md contains no unfilled `{{TOKEN}}` placeholders
+- [ ] Generated CLAUDE.md is ≤ 200 lines
+- [ ] Generated hooks are executable (`chmod +x` applied automatically)
+- [ ] `validate-command.py` blocks fork bomb pattern (`:(){:|:&};:`)
+- [ ] `protect-files.py` blocks writes to `.env`
+- [ ] `/shipwithai-harness:doctor` runs health check and produces scored report
 
 ### Should Have
-- [ ] GitHub OAuth works for all providers
-- [ ] Password reset flow works (Better Auth, Firebase, Supabase)
-- [ ] Webhook sync works (Clerk → DB)
-- [ ] `verify-auth-setup.ts` detects missing configuration correctly
+- [ ] Detects existing CLAUDE.md and warns before overwriting
+- [ ] Scan summary shown before asking questions
+- [ ] settings.json allow rules customized per detected toolchain (bun vs npm, pytest vs jest)
 
 ### Nice to Have
-- [ ] Apple OAuth works
-- [ ] Account linking (same email, different OAuth provider)
-- [ ] 2FA/Passkey support
+- [ ] Suggests harness-doctor after setup completes
+- [ ] Detects monorepo structure and asks which sub-project to generate for
 
-**Evaluation method:** Each tester creates fresh `create-next-app`, runs setup, tests login/logout. Record setup time. If > 10 minutes or encounters error not in guide → FAIL.
+**Evaluation method:** Tester runs `/shipwithai-harness:setup` in a real project, verifies all 5 files generated, hooks are executable, no unfilled tokens. Time to complete: < 2 minutes.
 
 ---
 

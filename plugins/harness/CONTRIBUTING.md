@@ -1,14 +1,14 @@
-# Contributing to ShipWithAI Auth
+# Contributing to ShipWithAI Harness
 
-Welcome to the team! This guide covers everything you need to contribute to the shipwithai-auth plugin.
+Welcome to the team! This guide covers everything you need to contribute to the shipwithai-harness plugin.
 
 ## Getting Started
 
 1. Clone the repo and install test dependencies:
 
 ```bash
-git clone https://github.com/shipwithai/shipwithai-auth.git
-cd shipwithai-auth
+git clone https://github.com/MangalaHQ/shipwithai-plugins.git
+cd shipwithai-plugins/plugins/harness
 npm install
 ```
 
@@ -21,13 +21,13 @@ node tests/run-all.js
 3. Load the plugin locally in Claude Code:
 
 ```bash
-claude --plugin-dir ./shipwithai-auth
+claude --plugin-dir ./plugins/harness
 ```
 
 ## Project Structure
 
 ```text
-shipwithai-auth/
+shipwithai-harness/
 ├── .claude-plugin/plugin.json    # Plugin metadata (name, version, description)
 ├── skills/auth-setup/
 │   ├── SKILL.md                  # Main skill entry point (decision framework)
@@ -130,7 +130,7 @@ The suite covers 8 categories: plugin structure, TypeScript syntax, documentatio
 
 **Minimum pass rate to merge: 85% (currently targeting 100%).**
 
-For manual testing against real OAuth credentials, follow the checklist in `docs/shipwithai-auth-testing-checklist.docx`.
+For manual testing, run `node tests/run-all.js` and test against a real project with `claude --plugin-dir ./plugins/harness`.
 
 ## Provider Assignment
 
