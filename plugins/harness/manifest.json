@@ -1,0 +1,21 @@
+{
+  "lastUpdated": 1746748800000,
+  "skills": [
+    {
+      "skillId": "harness-setup",
+      "name": "harness-setup",
+      "description": "Generate a Claude Code harness for your project. Auto-detects stack (Next.js, Laravel, Spring Boot). Generates CLAUDE.md, settings.json, and safety hooks. Run /shipwithai-harness:setup",
+      "creatorType": "community",
+      "updatedAt": "2026-05-08T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "harness-doctor",
+      "name": "harness-doctor",
+      "description": "Diagnose and fix your Claude Code harness. Scans CLAUDE.md, settings.json, hooks health, and stack consistency. Produces scored report with actionable fixes.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-08T00:00:00Z",
+      "enabled": true
+    }
+  ]
+}

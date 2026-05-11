@@ -1,0 +1,48 @@
+{
+  "skillId": "harness-doctor",
+  "version": "1.0.0",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Check my Claude Code harness health",
+      "shouldTrigger": true,
+      "reason": "Direct request for health check using 'harness'"
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Something is wrong with my CLAUDE.md or hooks, can you diagnose?",
+      "shouldTrigger": true,
+      "reason": "Diagnose keyword + mentions harness components"
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "/shipwithai-harness:doctor",
+      "shouldTrigger": true,
+      "reason": "Direct command invocation"
+    },
+    {
+      "id": "trigger-4",
+      "prompt": "Are my Claude hooks configured correctly?",
+      "shouldTrigger": true,
+      "reason": "Hooks health check = harness-doctor"
+    },
+    {
+      "id": "trigger-5",
+      "prompt": "Validate my project's Claude Code setup",
+      "shouldTrigger": true,
+      "reason": "Validate existing setup = doctor, not setup"
+    },
+    {
+      "id": "no-trigger-1",
+      "prompt": "Set up Claude Code for my project",
+      "shouldTrigger": false,
+      "reason": "This is harness-setup (new setup), not doctor (diagnose existing)"
+    },
+    {
+      "id": "no-trigger-2",
+      "prompt": "Check my auth configuration for errors",
+      "shouldTrigger": false,
+      "reason": "Auth check = shipwithai-auth:doctor, not harness-doctor"
+    }
+  ]
+}

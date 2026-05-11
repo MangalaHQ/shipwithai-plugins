@@ -1,0 +1,66 @@
+{
+  "skillId": "harness-setup",
+  "version": "2.0.0",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Set up Claude Code harness for my project",
+      "shouldTrigger": true,
+      "reason": "Direct request using canonical keyword 'harness'"
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Generate CLAUDE.md and settings.json for this Next.js app",
+      "shouldTrigger": true,
+      "reason": "Lists the two main outputs explicitly"
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "I want Claude to understand my project. Can you set up the config files?",
+      "shouldTrigger": true,
+      "reason": "Paraphrase — 'config files' + 'Claude to understand' maps to harness setup"
+    },
+    {
+      "id": "trigger-4",
+      "prompt": "/shipwithai-harness:setup",
+      "shouldTrigger": true,
+      "reason": "Direct command invocation"
+    },
+    {
+      "id": "trigger-5",
+      "prompt": "Initialize Claude Code for my Spring Boot project",
+      "shouldTrigger": true,
+      "reason": "Stack-specific initialization request"
+    },
+    {
+      "id": "trigger-6",
+      "prompt": "Set up Claude Code for my Go API",
+      "shouldTrigger": true,
+      "reason": "Stack not in v1.0 — validates any-stack support"
+    },
+    {
+      "id": "trigger-7",
+      "prompt": "My Rust project needs a CLAUDE.md — can you generate one?",
+      "shouldTrigger": true,
+      "reason": "Stack not in v1.0 — validates any-stack support"
+    },
+    {
+      "id": "trigger-8",
+      "prompt": "Generate a harness for this Ruby on Rails app",
+      "shouldTrigger": true,
+      "reason": "Stack not in v1.0 — validates any-stack support"
+    },
+    {
+      "id": "no-trigger-1",
+      "prompt": "Check my existing CLAUDE.md for problems",
+      "shouldTrigger": false,
+      "reason": "This is harness-doctor, not harness-setup"
+    },
+    {
+      "id": "no-trigger-2",
+      "prompt": "Set up authentication with Better Auth",
+      "shouldTrigger": false,
+      "reason": "This is shipwithai-auth:setup, not harness"
+    }
+  ]
+}
