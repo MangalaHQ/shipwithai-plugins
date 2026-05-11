@@ -1,0 +1,16 @@
+{
+  "description": "Auth setup verification hooks",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "hooks/post-write-check.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

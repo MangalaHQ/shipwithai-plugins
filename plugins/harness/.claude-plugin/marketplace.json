@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "shipwithai-harness",
+  "description": "Generate a production-ready Claude Code harness for your project. Auto-detects stack (Next.js, Laravel, Spring Boot). Generates CLAUDE.md, settings.json, and safety hooks in one command.",
+  "owner": {
+    "name": "ShipWithAI",
+    "email": "support@shipwithai.com"
+  },
+  "plugins": [
+    {
+      "name": "shipwithai-harness",
+      "description": "Generate a production-ready Claude Code harness for your project. Auto-detects stack, generates CLAUDE.md, settings.json, and safety hooks.",
+      "version": "1.0.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./",
+      "category": "productivity",
+      "tags": ["claude-code", "harness", "setup", "nextjs", "laravel", "spring-boot"]
+    }
+  ],
+  "version": "1.0.0"
+}
