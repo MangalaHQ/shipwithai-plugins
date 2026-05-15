@@ -9,7 +9,7 @@
 
 ```yaml
 plugin_name: shipwithai-harness
-plugin_version: 1.0.0
+plugin_version: 2.0.0
 domain: Harness (Claude Code project setup)
 target_user: Indie hackers and small teams using Next.js, Laravel, or Spring Boot
 language: TypeScript / PHP / Java (generates for all 3)
