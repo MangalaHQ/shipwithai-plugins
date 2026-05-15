@@ -27,6 +27,27 @@
         "firebase",
         "nextjs"
       ]
+    },
+    {
+      "name": "shipwithai-harness",
+      "description": "Generate a production-ready Claude Code harness for your project. Auto-detects stack (Next.js, Laravel, Spring Boot). Generates CLAUDE.md, settings.json, and safety hooks in one command.",
+      "version": "2.0.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./plugins/harness",
+      "category": "productivity",
+      "tags": [
+        "claude-code",
+        "harness",
+        "setup",
+        "nextjs",
+        "laravel",
+        "spring-boot",
+        "hooks",
+        "settings"
+      ]
     }
   ],
   "version": "1.7.0"
