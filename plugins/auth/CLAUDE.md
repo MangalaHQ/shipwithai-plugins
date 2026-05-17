@@ -9,12 +9,12 @@
 
 ```yaml
 plugin_name: shipwithai-auth
-plugin_version: 1.7.1
+plugin_version: 1.8.0
 domain: Authentication
 target_user: Indie hackers
-framework: Next.js 14+ App Router
-orm: Drizzle
-auth: Better Auth, Firebase Auth (Clerk, Auth.js, Supabase Auth — coming soon)
+framework: Next.js 14+ App Router, React 18+ (Vite + React Router v6)
+orm: Drizzle (Next.js path)
+auth: Better Auth, Firebase Auth (Next.js); Clerk, Supabase Auth (React/Vite)
 language: TypeScript (strict mode)
 styling: Tailwind CSS + shadcn/ui
 

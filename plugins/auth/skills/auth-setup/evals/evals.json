@@ -1,6 +1,6 @@
 {
   "skillId": "auth-setup",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "evals": [
     {
       "id": "eval-01",
@@ -12,17 +12,17 @@
     {
       "id": "eval-02",
       "prompt": "I need authentication for my app. I'm not sure which provider to use.",
-      "expectedBehavior": "Should trigger auth-setup skill, present decision framework with Better Auth and Firebase Auth only, ask clarifying questions (mobile support? self-hosted?), then guide to appropriate provider. Should NOT offer Clerk, Auth.js, or Supabase Auth as options.",
+      "expectedBehavior": "Should detect no auth and present decision framework. For Next.js projects: offer Better Auth and Firebase Auth. For Vite + React Router projects: offer Clerk and Supabase Auth. Ask clarifying questions about framework before presenting provider options.",
       "category": "decision-framework",
       "provider": "any"
     },
     {
       "id": "eval-03",
       "prompt": "Add Clerk auth with GitHub and Google OAuth to my existing Next.js project",
-      "expectedBehavior": "Should inform user that Clerk is not yet supported and suggest Better Auth or Firebase Auth as alternatives. Should NOT proceed with Clerk setup.",
+      "expectedBehavior": "Should inform user that Clerk is not supported for Next.js projects in this plugin and suggest Better Auth or Firebase Auth. For Vite + React Router projects, Clerk IS supported — should detect if user's project is Next.js vs Vite and respond accordingly.",
       "category": "unsupported-provider",
       "provider": "clerk",
-      "status": "disabled-provider"
+      "status": "disabled-for-nextjs"
     },
     {
       "id": "eval-04",
@@ -34,10 +34,10 @@
     {
       "id": "eval-05",
       "prompt": "I'm already using Supabase for my database. Add auth with email/password and Google login",
-      "expectedBehavior": "Should inform user that Supabase Auth is not yet supported. Suggest Better Auth as alternative (can connect to Supabase's PostgreSQL database via Drizzle ORM).",
-      "category": "unsupported-provider",
+      "expectedBehavior": "Should inform user that Supabase Auth is supported for Vite + React Router projects. If user's project is Next.js, explain the wizard targets Next.js with Better Auth/Firebase; Supabase Auth requires using @supabase/ssr directly. If project is Vite, proceed with 12-supabase-react-guide.md.",
+      "category": "framework-routing",
       "provider": "supabase",
-      "status": "disabled-provider"
+      "status": "supported-react-only"
     },
     {
       "id": "eval-06",
@@ -129,6 +129,41 @@
       "expectedBehavior": "Should ONLY add reset-password.tsx and update auth client; should NOT regenerate README, should NOT run full Step 0 wizard, should NOT touch existing auth.ts beyond what's needed for password reset. README generation Step 8 must NOT trigger.",
       "category": "negative",
       "provider": "better-auth"
+    },
+    {
+      "id": "eval-19",
+      "prompt": "Set up auth for my Vite React app with React Router v6",
+      "expectedBehavior": "Should detect Vite framework (vite.config.*) and React Router v6 (react-router-dom in deps). Should offer Clerk or Supabase Auth as options (NOT Better Auth or Firebase for the React SPA wizard). Should present the React-specific provider decision framework.",
+      "category": "happy-path",
+      "provider": "clerk-or-supabase"
+    },
+    {
+      "id": "eval-20",
+      "prompt": "Add Clerk authentication to my React Router app",
+      "expectedBehavior": "Should detect Vite + React Router, read 11-clerk-vite-react-guide.md, install @clerk/react-router-js (NOT @clerk/nextjs), wrap the app with <ClerkProvider routerType='path'>, create sign-in and sign-up routes with <SignIn> and <SignUp> pre-built components, and copy clerk/ component assets.",
+      "category": "happy-path",
+      "provider": "clerk"
+    },
+    {
+      "id": "eval-21",
+      "prompt": "I have a Vite project — add login and signup pages with Google OAuth",
+      "expectedBehavior": "Should detect Vite framework, check for React Router in deps. If React Router present, proceed to Step 1 React path (Clerk or Supabase). Should ask which provider. Should NOT assume Next.js. Should NOT use any Next.js-specific patterns (no next/navigation, no useRouter from next).",
+      "category": "happy-path",
+      "provider": "clerk-or-supabase"
+    },
+    {
+      "id": "eval-22",
+      "prompt": "Set up Supabase Auth for my React SPA with Google OAuth",
+      "expectedBehavior": "Should read 12-supabase-react-guide.md, install @supabase/supabase-js (NOT @supabase/ssr — that's for Next.js), create AuthContext with onAuthStateChange, create ProtectedRoute, create LoginPage with signInWithOAuth('google'), add /auth/callback route with AuthCallback component, and walk through Google OAuth setup in Supabase Dashboard.",
+      "category": "happy-path",
+      "provider": "supabase"
+    },
+    {
+      "id": "eval-23",
+      "prompt": "Add auth to my Next.js app using Clerk",
+      "expectedBehavior": "Should detect Next.js (next.config.*) and inform user that Clerk on Next.js is not in this plugin's wizard — should suggest using @clerk/nextjs directly with its own docs. Should alternatively offer to set up Better Auth or Firebase Auth via this plugin. Should NOT proceed with the Vite Clerk guide on a Next.js project.",
+      "category": "edge-case",
+      "provider": "clerk"
     }
   ]
 }

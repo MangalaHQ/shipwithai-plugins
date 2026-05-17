@@ -1,12 +1,12 @@
 {
-  "lastUpdated": 1741046400000,
+  "lastUpdated": 1747440000000,
   "skills": [
     {
       "skillId": "auth-setup",
       "name": "auth-setup",
-      "description": "Set up auth for Next.js apps. Better Auth & Firebase. Email/password, Google OAuth, sessions, middleware, UI components, provider README with full config steps. Auto-detects themes.",
+      "description": "Set up auth for Next.js or React/Vite apps. Better Auth & Firebase (Next.js), Clerk & Supabase Auth (React/Vite). Email/password, Google OAuth, sessions, UI components, provider README. Auto-detects themes.",
       "creatorType": "community",
-      "updatedAt": "2026-04-26T00:00:00Z",
+      "updatedAt": "2026-05-17T00:00:00Z",
       "enabled": true
     },
     {

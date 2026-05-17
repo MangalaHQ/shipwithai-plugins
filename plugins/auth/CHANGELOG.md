@@ -4,7 +4,34 @@ All notable changes to the shipwithai-auth plugin will be documented in this fil
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [1.7.1] - 2026-04-26
+## [1.8.0] - 2026-05-17
+
+### Added
+- **React SPA support** — Full support for **Vite + React Router v6** projects alongside the existing Next.js path. The `auth-setup` wizard now auto-detects `vite.config.*` and routes to React-specific providers.
+- **Clerk provider (Vite + React)** — Complete setup guide and component set for `@clerk/react-router-js`. Pre-built `<SignIn>`, `<SignUp>`, `<UserProfile>`, `<UserButton>` components. `ClerkProvider` with `routerType="path"`. Protected/public route guards. Webhook handler for DB sync.
+- **Supabase Auth provider (Vite + React)** — Complete setup guide and component set using `@supabase/supabase-js` (client-only, no SSR package). React Context (`AuthContext`) with `onAuthStateChange`, `ProtectedRoute` wrapper, `AuthCallback` OAuth handler, login/register pages with Google OAuth.
+- **New reference files** — `references/11-clerk-vite-react-guide.md` (~240 lines) and `references/12-supabase-react-guide.md` (~270 lines). Both include installation, env vars, component patterns, OAuth setup checklists, and gotchas for React SPAs.
+- **New asset directories** — `assets/components/clerk/` (5 files: clerk-provider, auth-routes, auth-layout, login-page, register-page, user-profile) and `assets/components/supabase-react/` (5 files: auth-context, protected-route, auth-callback, login-page, register-page).
+- **New asset configs** — `assets/config/clerk-react.config.ts` and `assets/config/supabase-react.config.ts` (browser client singleton).
+- **5 new evals** — `eval-19` (Vite + React Router auth), `eval-20` (Clerk explicit), `eval-21` (Vite + Google OAuth), `eval-22` (Supabase Auth React SPA), `eval-23` (Clerk on Next.js → mismatch warning).
+
+### Changed
+- **`SKILL.md` Step 0a** — Framework detection extended: `vite.config.*` + `react-router-dom` in deps now routes to the React SPA path.
+- **`SKILL.md` Step 0b** — Version compatibility checks split by framework path (Next.js vs Vite).
+- **`SKILL.md` Step 1** — Provider options split by framework: Next.js → Better Auth/Firebase; Vite + React Router → Clerk/Supabase Auth.
+- **`SKILL.md` Step 1a** — OAuth section updated: Clerk + Supabase support Google/GitHub from dashboard with no extra code.
+- **`SKILL.md` Step 1b** — Note added: Vite projects use `src/index.css` instead of `app/globals.css`.
+- **`SKILL.md` Step 2** — Provider guide routing table now includes framework column.
+- **`SKILL.md` Step 3** — Email provider step scoped to Better Auth / Next.js only (Clerk + Supabase handle email natively).
+- **`SKILL.md` Step 5** — Database schema notes added for Clerk (webhook-based sync) and Supabase Auth (built-in `auth` schema).
+- **`SKILL.md` Step 6** — Component tables split by framework + provider; Vite component copy instructions added.
+- **`manifest.json`** — `auth-setup` description updated to mention React/Vite support.
+- **`.claude-plugin/plugin.json`** — Description updated; `react`, `vite`, `react-router`, `clerk`, `supabase` keywords added; version bumped to `1.8.0`.
+- **`.claude-plugin/marketplace.json`** — Description and tags updated; version bumped to `1.8.0`.
+- **`CLAUDE.md`** — CONFIG block updated: `framework` now lists both Next.js and Vite + React Router; `auth` field updated with framework-provider mapping.
+- **Evals `eval-02`, `eval-03`, `eval-05`** — Expected behaviors updated to reflect new framework-aware provider routing.
+
+
 
 ### Added
 - **Provider-specific README templates** — `assets/templates/providers/firebase/README.md.tmpl` and `assets/templates/providers/better-auth/README.md.tmpl`. Each is a self-contained scaffold with prerequisites, step-by-step provider configuration (Firebase Console walkthrough / Better Auth secret generation + DB migration), env var table with "Where to get it" links, OAuth setup, troubleshooting, and production checklist. Uses `{{PLACEHOLDER}}` substitution and `<!-- IF key=value -->` conditional blocks for OAuth/email branches. Single source of truth: deep-links back to `references/05-firebase-auth-guide.md`, `references/02-better-auth-guide.md`, `references/07-oauth-social-login.md`, and `references/09-common-pitfalls.md` instead of duplicating content.

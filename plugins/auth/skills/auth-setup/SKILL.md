@@ -50,12 +50,12 @@ See pitfall #44.
 
 | Your situation | Best choice | Why |
 |---|---|---|
-| Full control, no vendor lock-in | **Better Auth** | Open-source, self-hosted, most flexible, zero cost |
-| Google ecosystem or mobile + web | **Firebase Auth** | Best mobile/KMP support, free < 50K MAU |
+| Next.js — full control, no vendor lock-in | **Better Auth** | Open-source, self-hosted, most flexible, zero cost |
+| Next.js — Google ecosystem or mobile + web | **Firebase Auth** | Best mobile/KMP support, free < 50K MAU |
+| React SPA (Vite) — fastest setup | **Clerk** | Pre-built UI, dashboard, MFA. Free < 10K MAU |
+| React SPA (Vite) — using Supabase DB or want full control | **Supabase Auth** | Postgres-native, RLS, free < 50K MAU |
 
-> **Note:** Clerk, Auth.js, and Supabase Auth support is planned for a future release. Currently only Better Auth and Firebase Auth are fully supported.
-
-Full comparison with cost analysis: `references/01-choosing-provider.md`
+Full comparison: `references/01-choosing-provider.md`
 
 ## Quick Start
 
@@ -67,22 +67,33 @@ Before asking ANY questions, scan the project silently:
 - Check `next.config.*` (`.js`, `.mjs`, `.ts`) → Next.js
 - Check `astro.config.*` → Astro
 - Check `remix.config.*` or `@remix-run/*` in deps → Remix
-- Check `vite.config.*` without framework deps → Vite
+- Check `vite.config.*` → Vite
+  - Confirm React by checking `src/main.tsx`, `src/index.tsx`, or `src/App.tsx`
+  - Check `react-router-dom` in deps → React Router v6/v7
+  - Check `react-router.config.*` → React Router v7 framework mode
 - Check `app/` directory → App Router | `pages/` directory → Pages Router
-- If no framework detected → warn: "No supported framework detected. This plugin is designed for Next.js App Router."
-- If Pages Router only (no `app/`) → warn: "Pages Router detected. This plugin requires Next.js App Router (`app/` directory)."
+- If no framework detected → warn: "No supported framework detected. This plugin supports Next.js App Router and Vite + React Router."
+
+**If Vite + React Router detected** → Route to React SPA path (Step 1 + references 11–12, components `clerk/` or `supabase-react/`).
+**If Next.js detected** → Route to existing Next.js path (Step 1 + references 02 or 05, components `better-auth/` or `firebase/`).
 
 **0b. Version Compatibility:**
 - Read `package.json` and extract versions:
   - `next` — check major version (14, 15, 16+)
-  - `react` — must be ≥18 for Server Components
+  - `react` — must be ≥18
+  - `vite` — must be ≥4 for React SPA path
   - `node` — check `engines` field or `.nvmrc` if exists
-- ❌ BLOCK if Next.js < 14: "This plugin requires Next.js 14+ with App Router."
-- ❌ BLOCK if React < 18: "React 18+ required for Server Components."
-- ⚠️ WARNING if Next.js ≥ 16: "Next.js 16 detected. `middleware.ts` is deprecated — plugin will use `proxy.ts` pattern instead."
-- Store version for later decisions:
-  - Next.js 14 → `experimental: { serverComponentsExternalPackages: [...] }`
-  - Next.js 15+ → `serverExternalPackages: [...]`
+- **Next.js path:**
+  - ❌ BLOCK if Next.js < 14: "This plugin requires Next.js 14+ with App Router."
+  - ❌ BLOCK if React < 18: "React 18+ required for Server Components."
+  - ⚠️ WARNING if Next.js ≥ 16: "Next.js 16 detected. `middleware.ts` is deprecated — plugin will use `proxy.ts` pattern instead."
+  - Store version for later decisions:
+    - Next.js 14 → `experimental: { serverComponentsExternalPackages: [...] }`
+    - Next.js 15+ → `serverExternalPackages: [...]`
+- **Vite + React Router path:**
+  - ❌ BLOCK if React < 18: "React 18+ required."
+  - ❌ BLOCK if Vite < 4: "This plugin requires Vite 4+."
+  - ⚠️ WARNING if `react-router-dom` not found: "No react-router-dom detected — install it or the auth routing components will not work."
 
 **0c. Database ORM:**
 - Check `drizzle.config.ts` or `drizzle.config.js` → Drizzle
@@ -94,15 +105,16 @@ Before asking ANY questions, scan the project silently:
 **0d. Existing Auth:**
 - Check `src/lib/auth.ts` + `better-auth` in deps → Better Auth already installed
 - Check `src/lib/firebase.ts` + `firebase` in deps → Firebase already installed
-- Check `@clerk/nextjs` in deps → Clerk detected
+- Check `@clerk/nextjs` or `@clerk/react-router-js` in deps → Clerk detected
 - Check `next-auth` in deps → Auth.js/NextAuth detected
-- Check `@supabase/ssr` in deps → Supabase Auth detected
+- Check `@supabase/ssr` or `@supabase/supabase-js` in deps → Supabase Auth detected
 - If auth detected → ⚠️ WARNING: "Existing auth setup detected ({provider}). Running setup may conflict. Run `/shipwithai-auth:doctor` first to check health, or confirm you want to replace it."
 
 **0e. Existing Auth Pages & Routes:**
-- Check for existing pages: `src/app/(auth)/login/`, `src/app/login/`, `app/login/`
-- Check for existing API routes: `src/app/api/auth/`, `app/api/auth/`
-- Check for existing middleware: `src/middleware.ts`, `middleware.ts`
+- **Next.js:** Check for existing pages: `src/app/(auth)/login/`, `src/app/login/`, `app/login/`
+- **Next.js:** Check for existing API routes: `src/app/api/auth/`, `app/api/auth/`
+- **Next.js:** Check for existing middleware: `src/middleware.ts`, `middleware.ts`
+- **Vite + React Router:** Check for existing pages: `src/pages/login.tsx`, `src/routes/auth.tsx`, `src/pages/sign-in.tsx`
 - If found → store list, will warn before overwriting in Step 2
 
 **0f. Package Manager:**
@@ -125,6 +137,28 @@ Before asking ANY questions, scan the project silently:
 - This is detected via Question 5 (cannot auto-detect parent project path)
 - But if `globals.css` already has shadcn CSS variables → Scenario A (skip theme generation)
 
+**0i. Vite + React SPA Discovery (run ONLY if Vite detected in 0a):**
+- Check `src/main.tsx`, `src/index.tsx`, `src/App.tsx` → confirm React is the framework
+- Check `react-router-dom` version in package.json → React Router v6 (≥6.0) or v7 (≥7.0)
+- Check `src/routes/` directory existence → flat file routing (React Router v6)
+- Detect existing Clerk: `@clerk/react-router-js` or `@clerk/nextjs` in deps (warn if `@clerk/nextjs` — wrong package)
+- Detect existing Supabase: `@supabase/supabase-js` in deps
+- Detect existing Supabase pages: `src/pages/login.tsx`, `src/contexts/AuthContext.tsx`
+- Detect Vite version from package.json
+- Output React-specific discovery summary:
+  ```
+  🔍 Project scan complete
+
+  Framework:     React 18.x (Vite 5.x)
+  Router:        React Router v6
+  Package mgr:   npm
+  UI:            Tailwind CSS (no shadcn)
+  Existing auth: None detected
+  Vite version:  5.0.0
+
+  Ready to set up React authentication.
+  ```
+
 **Show discovery summary to user:**
 ```
 🔍 Project scan complete
@@ -141,6 +175,9 @@ React:         18.3.1
 Ready to set up authentication.
 ```
 
+**Next.js users** will be offered Better Auth and Firebase Auth.
+**Vite + React Router users** will be offered Clerk and Supabase Auth.
+
 **If critical issues found, STOP and report:**
 ```
 ⛔ Cannot proceed:
@@ -152,30 +189,39 @@ Fix these issues first, then re-run /shipwithai-auth:setup
 
 ### Step 1: Choose provider
 
-Ask user which provider using `AskUserQuestion`. Present options:
+Ask user which provider using `AskUserQuestion`. Options depend on framework detected in Step 0a:
+
+**If Next.js detected:**
 1. **Better Auth (Recommended)** — Free, self-hosted, full control. Open-source, no vendor lock-in. Best for most projects.
 2. **Firebase Auth** — Google ecosystem, best for mobile/KMP apps. Free < 50K MAU.
-3. Clerk — ⚠️ Coming Soon
-4. Supabase Auth — ⚠️ Coming Soon
-5. Auth.js — ⚠️ Coming Soon
+3. Clerk — ⚠️ Not supported for Next.js in this plugin. Use `@clerk/nextjs` directly.
+4. Supabase Auth — ⚠️ Not supported for Next.js in this plugin. Use `@supabase/ssr` directly.
 
-**If user selects a "Coming Soon" provider:** Do NOT proceed. Warn and re-ask with only supported options.
+**If Vite + React Router detected:**
+1. **Clerk (Recommended)** — Fastest setup. Pre-built UI. Free < 10K MAU. `@clerk/react-router-js`.
+2. **Supabase Auth** — Postgres-native. Free < 50K MAU. Full control. Great with Supabase DB.
+3. Better Auth — ⚠️ Requires a backend API server. See `references/02-better-auth-guide.md`. Not in the React SPA wizard.
+4. Firebase Auth — ⚠️ Works with React, but wizard targets Next.js. See `references/05-firebase-auth-guide.md`.
 
-If unsure, ask:
-- "Need mobile support (KMP/React Native)?" → Firebase Auth
-- "Want self-hosted, full control, zero cost?" → Better Auth
-- "Using Google ecosystem (Firebase, GCP)?" → Firebase Auth
-- "Building a SaaS with custom auth logic?" → Better Auth
+**If unsure (Vite + React Router path):**
+- "Need fastest setup with pre-built UI?" → Clerk
+- "Already using Supabase for your database?" → Supabase Auth
+- "Need full control over your auth data?" → Supabase Auth
+- "Need MFA, SSO, or enterprise features now?" → Clerk (paid tiers)
+
+**If user selects an incompatible provider** (e.g., Better Auth on Vite, Clerk on Next.js): Warn about the mismatch and re-ask with supported options only.
 
 ### Step 1a: Choose OAuth
 
 Ask user which social login using `AskUserQuestion`. Present options:
 1. **Google only (Recommended)** — Most common, covers 90%+ of users
-2. Google + GitHub — ⚠️ GitHub Coming Soon
-3. Google + GitHub + Apple — ⚠️ GitHub & Apple Coming Soon
+2. Google + GitHub — ⚠️ GitHub Coming Soon (Next.js); GitHub available with Clerk/Supabase now
+3. Google + GitHub + Apple — ⚠️ GitHub & Apple Coming Soon for Next.js; Clerk supports these now
 4. None — Email/password only, add social login later
 
-**If user selects an option with "Coming Soon" providers:** Warn, then proceed with Google only. Mention `/shipwithai-auth:add-oauth` for future providers.
+**If user selects an option with "Coming Soon" providers (Next.js path):** Warn, then proceed with Google only.
+**For Clerk (Vite path):** All social providers (Google, GitHub, Apple, etc.) are configured in Clerk Dashboard — no code changes needed. Inform user to enable them there.
+**For Supabase Auth (Vite path):** Google and GitHub are supported. Follow the Google OAuth checklist in `references/12-supabase-react-guide.md`.
 
 ### Step 1b: Detect theme context
 
@@ -244,18 +290,22 @@ Two curated theme presets are available in `assets/themes/`. Do NOT ask the user
 
 **Key rule:** Auth components use shadcn/ui CSS variables (`--primary`, `--background`, etc.). The theme detection ensures these variables match the surrounding project's design — whether it's the same project (A/B), a parent/sibling project (D), or an auto-selected preset (C).
 
+> **Vite + React SPA note:** The globals CSS file is `src/index.css` in Vite projects, not `app/globals.css` (Next.js). The font import, shadcn init, and dark mode class (`<html className="dark">`) still apply, but target `src/index.css` and `index.html` respectively.
+
 See `references/10-existing-project-integration.md` for detailed adaptation steps.
 
 ### Step 2: Follow provider guide
 
-| Provider | Guide |
-|----------|-------|
-| Better Auth | `references/02-better-auth-guide.md` |
-| Firebase Auth | `references/05-firebase-auth-guide.md` |
+| Framework | Provider | Guide |
+|-----------|----------|-------|
+| Next.js | Better Auth | `references/02-better-auth-guide.md` |
+| Next.js | Firebase Auth | `references/05-firebase-auth-guide.md` |
+| Vite + React Router | Clerk | `references/11-clerk-vite-react-guide.md` |
+| Vite + React Router | Supabase Auth | `references/12-supabase-react-guide.md` |
 
-### Step 3: Email provider (Better Auth only)
+### Step 3: Email provider (Better Auth / Next.js only)
 
-**Skip this step for Firebase** — Firebase handles email delivery automatically.
+**Skip this step for Firebase, Clerk, and Supabase Auth** — Firebase handles email automatically; Clerk manages all email delivery; Supabase Auth has built-in email with its own SMTP.
 
 For Better Auth — you MUST ask the user before proceeding.
 **Do NOT skip this question. Do NOT assume console-only. STOP and ASK:**
@@ -294,6 +344,8 @@ See `references/07-oauth-social-login.md` for Google setup across all providers.
 
 See `references/08-database-auth-schema.md` for Drizzle/Prisma/Supabase schemas.
 
+> **Vite + React SPA note:** For Clerk, there is no local schema — users live in Clerk's database. Sync to your DB via webhooks (see `references/11-clerk-vite-react-guide.md` → "Webhook"). For Supabase Auth, the `auth` schema is managed by Supabase automatically; add your own `profiles` table and join on `auth.uid()`.
+
 ### Step 6: Add UI components
 
 **Use Step 0 discovery results:**
@@ -304,11 +356,65 @@ See `references/08-database-auth-schema.md` for Drizzle/Prisma/Supabase schemas.
 
 Components are organized by provider. Copy from the correct folder:
 
+**Next.js providers:**
 - **Better Auth:** `assets/components/better-auth/`
 - **Firebase Auth:** `assets/components/firebase/`
-- **Shared (provider-agnostic):** `assets/components/shared/`
+- **Shared (Next.js, provider-agnostic):** `assets/components/shared/`
 
-**REQUIRED** — Core auth pages (MUST copy all of these):
+**Vite + React Router providers:**
+- **Clerk:** `assets/components/clerk/`
+- **Supabase Auth:** `assets/components/supabase-react/`
+
+---
+
+#### Next.js — Required components (MUST copy all):
+
+| File | Source folder | Place at | Purpose |
+|------|---------------|----------|---------||
+| `login-page.tsx` | `{provider}/` | `app/(auth)/login/page.tsx` | Login with email + social buttons |
+| `register-page.tsx` | `{provider}/` | `app/(auth)/register/page.tsx` | Registration form |
+| `forgot-password.tsx` | `{provider}/` | `app/(auth)/forgot-password/page.tsx` | Password reset request (sends email) |
+| `reset-password.tsx` | `{provider}/` | `app/(auth)/reset-password/page.tsx` | Complete password reset (token from email → new password) |
+| `protected-layout.tsx` | `{provider}/` | `app/(protected)/layout.tsx` | Server-side session verification |
+| `dashboard-client.tsx` | `{provider}/` | `app/(protected)/dashboard/dashboard-client.tsx` | Sign-out button (client component) |
+| `dashboard-page.tsx` | `shared/` | `app/(protected)/dashboard/page.tsx` | Protected dashboard page |
+| `icons.tsx` | `shared/` | `src/components/icons.tsx` | OAuth provider SVG icons (Google, GitHub) — required by login/register pages |
+| `globals.css` | `shared/` | `app/globals.css` | Tailwind CSS directives + shadcn/ui variables |
+
+**RECOMMENDED** — User management (copy unless user explicitly declines):
+| `user-profile.tsx` | `{provider}/` | `app/(protected)/profile/page.tsx` | Profile view + update name + sign out + delete account |
+
+Where `{provider}` = `better-auth` or `firebase` depending on the chosen provider.
+
+---
+
+#### Vite + React Router — Required components (MUST copy all):
+
+**Clerk:**
+
+| File | Source folder | Place at | Purpose |
+|------|---------------|----------|---------||
+| `clerk-provider.tsx` | `clerk/` | `src/main.tsx` (wrap `<App>`) | ClerkProvider root wrapper |
+| `auth-routes.tsx` | `clerk/` | `src/App.tsx` | Route config with public/protected guards |
+| `login-page.tsx` | `clerk/` | `src/pages/sign-in.tsx` | `<SignIn>` pre-built component |
+| `register-page.tsx` | `clerk/` | `src/pages/sign-up.tsx` | `<SignUp>` pre-built component |
+| `user-profile.tsx` | `clerk/` | `src/components/UserMenu.tsx` | `<UserButton>` in nav + `<UserProfile>` page |
+| `auth-layout.tsx` | `clerk/` | `src/components/AuthLayout.tsx` | Auth page wrapper with nav |
+
+**Supabase Auth:**
+
+| File | Source folder | Place at | Purpose |
+|------|---------------|----------|---------||
+| `auth-context.tsx` | `supabase-react/` | `src/contexts/AuthContext.tsx` | Session context + auth methods |
+| `protected-route.tsx` | `supabase-react/` | `src/components/ProtectedRoute.tsx` | Route guard — redirects if not logged in |
+| `auth-callback.tsx` | `supabase-react/` | `src/components/AuthCallback.tsx` | OAuth code exchange + redirect |
+| `login-page.tsx` | `supabase-react/` | `src/pages/LoginPage.tsx` | Email + Google sign in |
+| `register-page.tsx` | `supabase-react/` | `src/pages/RegisterPage.tsx` | Email signup + confirmation |
+
+Also copy from `assets/config/`:
+| `supabase-react.config.ts` | `config/` | `src/lib/supabase.ts` | Supabase browser client singleton |
+
+**IMPORTANT for Supabase React Router config:** Add `/auth/callback` route pointing to `<AuthCallback />` in your `createBrowserRouter` config.
 
 | File | Source folder | Place at | Purpose |
 |------|---------------|----------|---------|
